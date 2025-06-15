@@ -3,10 +3,9 @@
 > **暗号通貨投資をもっと身近に、みんなで一緒に成長できるプラットフォーム**
 
 [![ライブデモ](https://img.shields.io/badge/🌐_ライブデモ-稼働中-success)](https://やってるか.みんな)
-[![ハッカソン](https://img.shields.io/badge/🏆_ハッカソン-提出済み-blue)](https://app.akindo.io/hackathons/27WABBdmRUvvOr1m)
+[![ハッカソン](https://img.shields.io/badge/🏆_ハッカソン-提出済み-blue)](https://app.akindo.io/communities/63GvLV91NCNjA93j/products/WjKnoVK7DC3jNJz21?tab=overview)
 [![React Router](https://img.shields.io/badge/React_Router-v7.6.2-blue)](https://reactrouter.com/)
 [![XRPL](https://img.shields.io/badge/XRPL-v4.3.0-green)](https://xrpl.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange)](https://workers.cloudflare.com/)
 
 **🌐 今すぐ体験**: https://やってるか.みんな
@@ -57,7 +56,7 @@ graph TB
 | **開発体制**       | 1 名（フルスタック開発）                                                |
 | **対象ユーザー**   | 暗号通貨初心者〜中級者                                                  |
 | **現在の状況**     | ✅ 本番環境で稼働中                                                     |
-| **ハッカソン**     | [Akindo.io](https://app.akindo.io/hackathons/27WABBdmRUvvOr1m) 提出済み |
+| **ハッカソン**     | [Akindo.io](https://app.akindo.io/communities/63GvLV91NCNjA93j/products/WjKnoVK7DC3jNJz21?tab=overview) 提出済み |
 
 ---
 
@@ -126,15 +125,15 @@ graph LR
     subgraph "React Router v7 エコシステム"
         A[app/root.tsx<br/>アプリケーションルート]
         B[app/provider.tsx<br/>Jotai + SWR統合]
-        C[app/template.tsx<br/>レイアウトテンプレート]
+        C[app/layout.tsx<br/>レイアウトテンプレート]
         D[app/routes/<br/>ページルート定義]
     end
 
     subgraph "コンポーネント構成"
         E[components/ui/<br/>UIプリミティブ]
-        F[components/forms/<br/>フォームコンポーネント]
-        G[components/Xaman.tsx<br/>XUMM認証UI]
-        H[components/PriceAlerts.tsx<br/>価格アラート管理]
+        F[components/xrp/<br/>XRPL機能コンポーネント]
+        G[components/layout/<br/>レイアウトコンポーネント]
+        H[XrplDex.tsx<br/>DEX取引UI (785行)]
     end
 
     A --> B
@@ -143,7 +142,7 @@ graph LR
     D --> E
     D --> F
     D --> G
-    D --> H
+    F --> H
 ```
 
 #### バックエンド・API
@@ -154,22 +153,20 @@ graph LR
         A[workers/app.ts<br/>メインワーカー]
         B[server/api.ts<br/>Hono APIルート]
         C[server/middleware.ts<br/>認証・CORS等]
-        D[server/schema/<br/>Valibotスキーマ]
+        D[server/handlers/<br/>APIハンドラー分離]
     end
 
     subgraph "データベース層"
         E[drizzle/schema.ts<br/>テーブル定義]
-        F[drizzle/client.ts<br/>DB接続設定]
-        G[drizzle/repositories/<br/>リポジトリパターン]
-        H[drizzle/migrations/<br/>マイグレーション]
+        F[drizzle/modules/<br/>データベースモジュール]
+        G[drizzle/migrations/<br/>マイグレーション]
     end
 
     A --> B
     B --> C
     B --> D
     E --> F
-    F --> G
-    E --> H
+    E --> G
 ```
 
 ---
@@ -182,23 +179,24 @@ graph LR
 - **秘密鍵不要**: XUMM アプリが安全に管理
 - **セッション管理**: [`app/cookie.server.ts`](app/cookie.server.ts)で実装
 
-### 💬 コミュニティ機能
+### 💱 XRPL DEX 機能
 
-- **投稿システム**: [`app/routes/community/community.tsx`](app/routes/community/community.tsx)
-- **カテゴリ分類**: trading, portfolio, news, question
-- **IPFS 保存**: 分散ストレージで検閲耐性
+- **完全統合 DEX**: [`app/components/xrp/XrplDex.tsx`](app/components/xrp/XrplDex.tsx) (785 行)
+- **jotai + useSWR 最適化**: メモリ効率的な状態管理
+- **リアルタイム価格**: WebSocket での即座更新
+- **スワップ・送金・Trust Line**: 全 XRPL 機能対応
 
-### 📊 価格監視・アラート
+### 📊 ダッシュボード機能
 
-- **リアルタイム価格**: WebSocket で即座に更新
-- **価格アラート**: [`app/components/PriceAlerts.tsx`](app/components/PriceAlerts.tsx)
-- **Cron 監視**: 5 分間隔での価格チェック
+- **統合ダッシュボード**: [`app/routes/dashboard/dashboard.tsx`](app/routes/dashboard/dashboard.tsx) (306 行)
+- **ポートフォリオ管理**: リアルタイム残高・取引履歴
+- **価格アラート**: カスタム条件での通知設定
 
 ### 📈 チャート・分析
 
 - **TradingView 統合**: [`app/routes/chart/`](app/routes/chart/)
-- **ポートフォリオ管理**: [`app/routes/portfolio.tsx`](app/routes/portfolio.tsx)
 - **市場分析**: リアルタイムデータ表示
+- **高度なチャート機能**: ローソク足・テクニカル指標
 
 ---
 
@@ -255,90 +253,6 @@ erDiagram
     posts ||--o{ user_interactions : "対象投稿"
 ```
 
-### インデックス戦略
-
-```sql
--- パフォーマンス最適化のためのインデックス
-CREATE INDEX idx_users_xumm_token ON users(xumm_user_token);
-CREATE INDEX idx_users_xrpl_address ON users(xrpl_address);
-CREATE INDEX idx_posts_category_created ON posts(category, created_at);
-CREATE INDEX idx_posts_user_created ON posts(user_id, created_at);
-CREATE INDEX idx_alerts_user_active ON price_alerts(user_id, is_active);
-CREATE INDEX idx_interactions_post ON user_interactions(post_id);
-```
-
----
-
-## 🔄 データフロー
-
-### 認証フロー
-
-```mermaid
-sequenceDiagram
-    participant U as ユーザー
-    participant F as フロントエンド
-    participant W as Workers
-    participant X as XUMM
-    participant D as D1 Database
-
-    U->>F: ログインボタンクリック
-    F->>W: 認証ペイロード作成要求
-    W->>X: SignInペイロード作成
-    X-->>W: QRコード・UUID返却
-    W-->>F: QRコード表示
-    F->>U: QRコード表示
-    U->>X: XUMMアプリでスキャン
-    X->>X: ユーザー認証
-    X-->>W: WebSocket通知
-    W->>D: ユーザー情報保存/更新
-    W->>F: セッションCookie設定
-    F->>U: ダッシュボードリダイレクト
-```
-
-### 投稿作成フロー
-
-```mermaid
-sequenceDiagram
-    participant U as ユーザー
-    participant F as フロントエンド
-    participant W as Workers
-    participant I as IPFS
-    participant D as D1 Database
-
-    U->>F: 投稿内容入力
-    F->>W: 投稿作成API呼び出し
-    W->>W: Valibotでバリデーション
-    W->>I: 投稿内容をIPFSに保存
-    I-->>W: IPFSハッシュ返却
-    W->>D: 投稿データ保存
-    D-->>W: 保存完了
-    W-->>F: 投稿作成成功
-    F->>U: 投稿一覧に表示
-```
-
-### 価格アラートフロー
-
-```mermaid
-sequenceDiagram
-    participant C as Cron Trigger
-    participant W as Workers
-    participant E as 外部API
-    participant D as D1 Database
-    participant N as 通知サービス
-
-    C->>W: 5分間隔で実行
-    W->>E: 現在価格取得
-    E-->>W: 価格データ返却
-    W->>D: アクティブなアラート取得
-    D-->>W: アラート一覧
-    W->>W: 価格条件チェック
-    alt 条件に合致
-        W->>D: アラート無効化
-        W->>N: プッシュ通知送信
-        N-->>W: 送信完了
-    end
-```
-
 ---
 
 ## 📁 プロジェクト構造
@@ -350,67 +264,62 @@ getting/
 ├── 📱 app/                          # React Router v7 アプリケーション
 │   ├── 🧩 components/               # 再利用可能コンポーネント
 │   │   ├── ui/                     # UIプリミティブ
-│   │   ├── forms/                  # フォームコンポーネント
-│   │   ├── Xaman.tsx              # XUMM認証UI (407行)
-│   │   ├── PriceAlerts.tsx        # 価格アラート管理 (285行)
-│   │   ├── Sidebar.tsx            # サイドバーナビ (216行)
-│   │   └── ...                    # その他コンポーネント
+│   │   ├── xrp/                    # XRPL機能コンポーネント
+│   │   │   ├── XrplDex.tsx        # 統合DEX (785行)
+│   │   │   ├── XummAuth.tsx       # XUMM認証 (173行)
+│   │   │   ├── Networks.tsx       # ネットワーク管理 (382行)
+│   │   │   ├── XrplClient.tsx     # XRPL接続 (108行)
+│   │   │   └── FetchRpc.tsx       # RPC通信 (76行)
+│   │   └── layout/                # レイアウトコンポーネント
 │   ├── 🛣️ routes/                   # ページルート
-│   │   ├── home.tsx               # ホームページ (653行)
+│   │   ├── dashboard/             # ダッシュボード
+│   │   │   └── dashboard.tsx      # メインダッシュボード (306行)
+│   │   ├── home/                  # ホームページ
 │   │   ├── community/             # コミュニティ機能
-│   │   │   └── community.tsx      # 投稿・表示 (313行)
 │   │   ├── chart/                 # チャート機能
-│   │   │   ├── chart.tsx          # メインチャート
-│   │   │   ├── market.tsx         # 市場データ
-│   │   │   └── linechart.tsx      # ラインチャート
-│   │   └── portfolio.tsx          # ポートフォリオ (78行)
+│   │   ├── portfolio/             # ポートフォリオ
+│   │   ├── alerts/                #価格アラート
+│   │   └── login/                 # ログイン・認証
 │   ├── 🔧 utils/                    # ユーティリティ関数
-│   │   ├── xumm.ts                # XUMM SDK統合
-│   │   ├── xrpl.ts                # XRPL接続管理
-│   │   ├── data-manager.ts        # データ管理 (499行)
+│   │   ├── xrpl.ts                # XRPL接続管理 (541行)
+│   │   ├── xumm.ts                # XUMM SDK統合 (74行)
 │   │   ├── storage.ts             # ストレージ管理 (394行)
-│   │   └── ...                    # その他ユーティリティ
-│   ├── 📝 types/                    # TypeScript型定義
-│   ├── root.tsx                   # アプリケーションルート (66行)
-│   ├── provider.tsx               # Jotai + SWR統合 (35行)
-│   ├── template.tsx               # レイアウトテンプレート (21行)
+│   │   ├── dig.ts                 # データ取得・解析 (312行)
+│   │   ├── useStore.ts            # ストア管理 (88行)
+│   │   └── hash.ts                # ハッシュ機能 (73行)
+│   ├── root.tsx                   # アプリケーションルート (51行)
+│   ├── provider.tsx               # Jotai + SWR統合 (32行)
+│   ├── layout.tsx                 # レイアウトテンプレート (21行)
 │   └── cookie.server.ts           # セッション管理 (17行)
 ├── 🗄️ drizzle/                      # データベース関連
 │   ├── schema.ts                  # テーブル定義 (96行)
-│   ├── client.ts                  # DB接続設定 (50行)
-│   ├── config.ts                  # Drizzle設定 (38行)
-│   ├── repositories/              # リポジトリパターン
 │   ├── modules/                   # データベースモジュール
 │   └── migrations/                # マイグレーションファイル
 ├── ⚡ server/                       # API・サーバー
-│   ├── api.ts                     # Hono APIルート (270行)
+│   ├── api.ts                     # Hono APIルート (216行)
 │   ├── middleware.ts              # 認証・CORS等 (68行)
-│   ├── index.ts                   # サーバーエントリー (17行)
+│   ├── handlers/                  # APIハンドラー分離
 │   └── schema/                    # Valibotスキーマ
 ├── 🌐 workers/                      # Cloudflare Workers
-│   └── app.ts                     # メインワーカー (40行)
 ├── 📚 docs/                         # ドキュメント
-│   ├── presentation.md            # プレゼン資料 (481行)
-│   ├── development-guide.md       # 開発ガイド (608行)
-│   └── D1-explained.md           # D1データベース解説 (44行)
 ├── 🎯 .cursor/                      # Cursor AI設定
-│   └── rules/                     # 開発ルール定義
-├── sw.ts                          # Service Worker (51行)
-├── wrangler.jsonc                 # Cloudflare設定 (58行)
-├── package.json                   # 依存関係・スクリプト (83行)
-└── README.md                      # このファイル
+├── sw.ts                          # Service Worker (91行)
+├── wrangler.jsonc                 # Cloudflare設定 (59行)
+└── package.json                   # 依存関係・スクリプト (79行)
 ```
 
 ### 主要ファイルの役割
 
-| ファイル                                                                   | 行数   | 役割                           |
-| -------------------------------------------------------------------------- | ------ | ------------------------------ |
-| [`app/routes/home.tsx`](app/routes/home.tsx)                               | 653 行 | メインダッシュボード・価格表示 |
-| [`app/components/Xaman.tsx`](app/components/Xaman.tsx)                     | 407 行 | XUMM 認証・ウォレット連携      |
-| [`app/routes/community/community.tsx`](app/routes/community/community.tsx) | 313 行 | コミュニティ投稿・表示         |
-| [`app/components/PriceAlerts.tsx`](app/components/PriceAlerts.tsx)         | 285 行 | 価格アラート設定・管理         |
-| [`server/api.ts`](server/api.ts)                                           | 270 行 | RESTful API・OpenAPI 仕様      |
-| [`app/components/Sidebar.tsx`](app/components/Sidebar.tsx)                 | 216 行 | ナビゲーション・メニュー       |
+| ファイル                                                                   | 行数   | 役割                                |
+| -------------------------------------------------------------------------- | ------ | ----------------------------------- |
+| [`app/components/xrp/XrplDex.tsx`](app/components/xrp/XrplDex.tsx)         | 785 行 | **🎯 統合 DEX 機能** (最新最適化版) |
+| [`app/utils/xrpl.ts`](app/utils/xrpl.ts)                                   | 541 行 | XRPL 接続・データ取得               |
+| [`app/utils/storage.ts`](app/utils/storage.ts)                             | 394 行 | ローカルストレージ管理              |
+| [`app/components/xrp/Networks.tsx`](app/components/xrp/Networks.tsx)       | 382 行 | ネットワーク管理・切り替え          |
+| [`app/utils/dig.ts`](app/utils/dig.ts)                                     | 312 行 | XRPL データ解析・取得               |
+| [`app/routes/dashboard/dashboard.tsx`](app/routes/dashboard/dashboard.tsx) | 306 行 | メインダッシュボード                |
+| [`server/api.ts`](server/api.ts)                                           | 216 行 | RESTful API・OpenAPI 仕様           |
+| [`app/components/xrp/XummAuth.tsx`](app/components/xrp/XummAuth.tsx)       | 173 行 | XUMM 認証・QR コード                |
 
 ---
 
@@ -452,10 +361,11 @@ bun run build             # プロダクションビルド
 bun run deploy            # Cloudflareにデプロイ
 ```
 
-### 技術選定理由
+### 最新技術選定理由
 
 | 技術                   | バージョン | 選定理由                                     |
 | ---------------------- | ---------- | -------------------------------------------- |
+| **React**              | v19.1.0    | 最新 Concurrent Features、Server Components  |
 | **React Router**       | v7.6.2     | 最新の SSR 対応、ファイルベースルーティング  |
 | **Cloudflare Workers** | -          | エッジコンピューティング、グローバル高速配信 |
 | **Hono**               | v4.7.11    | 軽量高速、OpenAPI 統合、型安全性             |
@@ -464,6 +374,31 @@ bun run deploy            # Cloudflareにデプロイ
 | **Jotai**              | v2.12.5    | 軽量状態管理、React Suspense 対応            |
 | **SWR**                | v2.3.3     | データフェッチング、キャッシュ最適化         |
 | **Valibot**            | v1.1.0     | 軽量バリデーション、TypeScript 統合          |
+| **XRPL**               | v4.3.0     | 最新 XRPL 機能、WebSocket 対応               |
+| **TypeScript**         | v5.8.3     | 最新型システム、厳密な型チェック             |
+
+---
+
+## 🎯 最新アーキテクチャの特徴
+
+### ⚡ パフォーマンス最適化
+
+- **jotai + useSWR 統合**: useMemo を完全排除、宣言的状態管理
+- **React 19 対応**: Concurrent Features 活用
+- **エッジコンピューティング**: Cloudflare Workers で 50ms 以下応答
+- **Service Worker**: オフライン対応・PWA 機能
+
+### 🔐 セキュリティ強化
+
+- **XUMM 統合**: 秘密鍵をクライアントで一切管理しない
+- **Valibot**: 全 API 入力の厳密バリデーション
+- **Cloudflare 保護**: DDoS・セキュリティ脅威から自動防御
+
+### 🌐 スケーラビリティ
+
+- **D1 データベース**: SQLite 基盤、自動スケーリング
+- **IPFS 統合**: 分散ファイルストレージ
+- **KV ストア**: 高速キャッシュ・セッション管理
 
 ---
 
@@ -489,24 +424,17 @@ bun run deploy            # Cloudflareにデプロイ
 ### 🌐 本番環境
 
 - **メインサイト**: https://やってるか.みんな
-- **API 仕様**: https://やってるか.みんな/api/docs
-- **ヘルスチェック**: https://やってるか.みんな/health
-
-### 📚 ドキュメント
-
-- **開発ガイド**: [`docs/development-guide.md`](docs/development-guide.md)
-- **プレゼン資料**: [`docs/presentation.md`](docs/presentation.md)
-- **D1 データベース**: [`docs/D1-explained.md`](docs/D1-explained.md)
+- **API 仕様**: https://やってるか.みんな/openapi.json
 
 ### 🏆 ハッカソン
 
-- **提出ページ**: [Akindo.io](https://app.akindo.io/hackathons/27WABBdmRUvvOr1m)
-- **デモ動画**: [YouTube](https://youtube.com/watch?v=demo)
+- **提出ページ**: [Akindo.io](https://app.akindo.io/communities/63GvLV91NCNjA93j/products/WjKnoVK7DC3jNJz21?tab=overview)
+<!-- - **デモ動画**: [YouTube](https://youtube.com/watch?v=demo) -->
 
 ### 🔧 開発ツール
 
 - **Drizzle Studio**: `bun run db:studio`
-- **API Explorer**: https://やってるか.みんな/api/editor
+- **API Explorer**: https://やってるか.みんな/api/v1
 - **Cloudflare Dashboard**: [Workers Console](https://dash.cloudflare.com/)
 
 ---
@@ -522,12 +450,6 @@ bun run deploy            # Cloudflareにデプロイ
 3. **ドキュメント**: 翻訳・説明改善
 4. **テスト**: ユーザビリティテスト
 
-### 連絡先
-
-- **Twitter**: [@your_twitter](https://twitter.com/your_twitter)
-- **Discord**: [コミュニティサーバー](https://discord.gg/your_server)
-- **Email**: contact@やってるか.みんな
-
 ---
 
 ## 📄 ライセンス
@@ -542,7 +464,7 @@ MIT License - 詳細は [LICENSE](LICENSE) ファイルを参照してくださ�
 
 _暗号通貨投資をもっと身近に、みんなで一緒に成長しよう_
 
-[![GitHub Stars](https://img.shields.io/github/stars/your-username/getting?style=social)](https://github.com/your-username/getting)
-[![Twitter Follow](https://img.shields.io/twitter/follow/your_twitter?style=social)](https://twitter.com/your_twitter)
+[![GitHub Stars](https://img.shields.io/github/stars/your-username/getting?style=social)](https://github.com/boborder)
+[![Twitter Follow](https://img.shields.io/twitter/follow/your_twitter?style=social)](https://twitter.com/dayjobdoor)
 
 </div>

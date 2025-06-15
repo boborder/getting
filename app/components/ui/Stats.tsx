@@ -50,13 +50,13 @@ export function StatItem({ title, value, description, variant = 'default', class
 
   return (
     <div className={`stat min-w-0 ${className}`.trim()}>
-      <div className='stat-title text-xs sm:text-sm truncate'>{title}</div>
+      <div className='stat-title truncate'>{title}</div>
       <div
-        className={`stat-value text-xs sm:text-lg lg:text-xl break-words hyphens-auto overflow-wrap-anywhere ${variantClasses[variant]}`.trim()}
+        className={`stat-value break-words hyphens-auto overflow-wrap-anywhere ${variantClasses[variant]}`.trim()}
       >
         {value}
       </div>
-      {description && <div className='stat-desc text-xs truncate'>{description}</div>}
+      {description && <div className='stat-desc truncate'>{description}</div>}
     </div>
   )
 }

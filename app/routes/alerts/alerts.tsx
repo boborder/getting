@@ -103,6 +103,7 @@ export default function Alerts({ loaderData }: Route.ComponentProps) {
   const [, addAlert] = useAtom(addAlertAtom)
   const [, toggleAlert] = useAtom(toggleAlertAtom)
   const [, deleteAlert] = useAtom(deleteAlertAtom)
+  console.log(loaderData)
 
   const handleAddAlert = () => {
     if (!newAlertForm.price) return

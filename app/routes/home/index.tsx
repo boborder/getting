@@ -13,14 +13,16 @@ import { Loading } from '~/components/ui/Loading'
 
 import { Fetch, NETWORK_CONFIGS, Payload, useNetworkOptions } from '~/components/xrp'
 // Utils
-import { useStore } from '~/utils'
+import { useStore } from '~/utils/useStore'
 import { AccountFormSchema, type XRPLAccountData, fetchXRPLAccountData, truncateAddress } from '~/utils/xrpl'
 import { useUser } from '~/utils/xumm'
-import { client } from '../../../server'
 import { AccountDisplay } from './AccountDisplay'
 
+import type { AppType } from '../../../server'
+import { hc } from 'hono/client'
+
 export function meta({ matches }: Route.MetaArgs) {
-  return [{ title: matches[0].pathname }, { name: 'description', content: 'やってるか！' }]
+  return [{ title: matches[0].pathname }, { name: 'description', content: 'みんな〜やってるか！' }]
 }
 
 // 🚀 SSR Loader
@@ -45,13 +47,12 @@ export async function loader({ context }: Route.LoaderArgs) {
 // 🎯 Client Loader
 export const clientLoader = async ({ serverLoader }: Route.ClientLoaderArgs) => {
   const serverData = await serverLoader()
-  const rpc = client.api.user
-    .$get({
-      query: {
-        name: 'bob',
-      },
-    })
-    .then((res) => res.json())
+  const client = hc<AppType>('/')
+  const rpc = client.api.user.$get({
+    query: {
+      name: 'bob',
+    },
+  }).then((res) => res.json())
   return {
     ...serverData,
     wallet: Wallet.generate(),
@@ -119,7 +120,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       defaultNetwork: NETWORK_CONFIGS.MAINNET.url,
     },
     store: {
-      onGet: (key) => JSON.parse(localStorage.getItem(key as string) || 'false'),
+      onGet: () =>
+        JSON.parse(localStorage.getItem('preferences') || 'null') || {
+          defaultAddress: 'r3kmLJN5D28dHuH8vZNUZpMC43pEHpaocV',
+          defaultNetwork: NETWORK_CONFIGS.MAINNET.url,
+        },
       onSet: (key, data) => localStorage.setItem(key as string, JSON.stringify(data)),
     },
   })
@@ -203,9 +208,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                   type='text'
                   placeholder='r...'
                   defaultValue={user?.account || preferences?.defaultAddress || 'r3kmLJN5D28dHuH8vZNUZpMC43pEHpaocV'}
-                  className={`input input-bordered font-mono text-xs sm:text-sm ${
-                    fields.address.errors?.[0] ? 'input-error' : ''
-                  }`}
                   disabled={revalidator.state === 'loading'}
                 />
                 {fields.address.errors?.[0] && (
@@ -216,16 +218,15 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               </div>
 
               {/* ネットワーク選択 */}
-              <div className='form-control w-full'>
+              <div className='form-control'>
                 <label className='label' htmlFor={fields.network.id}>
-                  <span className='label-text text-xs sm:text-sm font-medium'>ネットワーク</span>
+                  <span className='label-text'>ネットワーク</span>
                 </label>
                 <select
                   key={fields.network.key}
                   id={fields.network.id}
                   name={fields.network.name}
                   defaultValue={preferences?.defaultNetwork || NETWORK_CONFIGS.MAINNET.url}
-                  className='select select-bordered text-xs sm:text-sm'
                   disabled={networksLoading || revalidator.state === 'loading'}
                 >
                   {networksLoading ? (
@@ -265,7 +266,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               <button
                 type='button'
                 onClick={() => setAddressValue('r3kmLJN5D28dHuH8vZNUZpMC43pEHpaocV')}
-                className='btn btn-outline'
+                className='btn-outline'
                 disabled={revalidator.state === 'loading'}
               >
                 <span>🎲サンプルアドレス</span>
@@ -276,7 +277,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 <button
                   type='button'
                   onClick={() => setAddressValue(loaderData.wallet.classicAddress)}
-                  className='btn btn-outline btn-accent'
+                  className='btn-outline btn-accent'
                   disabled={revalidator.state === 'loading'}
                 >
                   <span>🎰生成ウォレット</span>
@@ -288,11 +289,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 <button
                   type='button'
                   onClick={() => user.account && setAddressValue(user.account)}
-                  className='btn btn-outline btn-info'
+                  className='btn-outline btn-info'
                   disabled={revalidator.state === 'loading'}
                 >
-                  <span className='hidden sm:inline'>🔐 XUMMアカウント</span>
-                  <span className='sm:hidden'>🔐 XUMM</span>
+                  <span>🔐 XUMMアカウント</span>
                 </button>
               )}
             </div>

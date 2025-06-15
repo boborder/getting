@@ -30,7 +30,7 @@ export {
   networkStatusAtom,
   currentNetworkStatusAtom,
   fetchNetworkStatusAtom,
-} from './NetworkShared'
+} from './Networks'
 
 // ===== XUMM認証系 =====
 export {

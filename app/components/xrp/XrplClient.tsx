@@ -1,7 +1,7 @@
 import { atom, useAtom, useAtomValue } from 'jotai'
 import useSWR from 'swr'
 import { Client } from 'xrpl'
-import { networkAtom } from './NetworkShared'
+import { networkAtom } from './Networks'
 
 // ===== 型定義 =====
 

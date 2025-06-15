@@ -7,7 +7,7 @@
   "theme_color": "#3051fc",
   "icons": [
     {
-      "src": "/assets/xrpl-logo.png",
+      "src": "/assets/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     }

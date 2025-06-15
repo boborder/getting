@@ -10,4 +10,4 @@ const app = middleware
 })
 
 export const server = app
-export const client = hc<typeof app>('/')
+export type AppType = typeof app

@@ -8,6 +8,7 @@
   "compatibility_date": "2025-06-11",
   "compatibility_flags": ["nodejs_compat"],
   "main": "./workers/app.ts",
+  "workers_dev": true,
   "observability": {
     "enabled": true
   },
@@ -42,12 +43,12 @@
       "preview_id": "97438016e2bf4989b1f9394ab0430244"
     }
   ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "R2",
-  //     "bucket_name": ""
-  //   }
-  // ]
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "123"
+    }
+  ],
   "services": [
     {
       "binding": "OIDC",

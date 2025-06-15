@@ -31,6 +31,12 @@ export const Menu = () => {
           </NavLink>
         </li>
         <li>
+          <NavLink to='/dashboard' className='current-page'>
+            <button className='btn btn-xs'>ダッシュボード</button>
+            <span className='badge'>🚀</span>
+          </NavLink>
+        </li>
+        <li>
           <NavLink to='/test' className='current-page'>
             <button className='btn btn-xs'>テスト</button>
             <span className='badge'>🧪</span>

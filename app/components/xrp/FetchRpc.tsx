@@ -30,7 +30,7 @@ export const Fetch = () => {
     <>
       <div className='responsive'>
         <div className='stat'>
-          <div className='stat-title'>LedgerIndex</div>
+          <div className='stat-title'>レジャーインデックス</div>
           <div className='stat-value'>
             <span className='font-mono text-3xl'>{feeData?.result?.ledger_current_index || '---'}</span>
           </div>
@@ -42,18 +42,18 @@ export const Fetch = () => {
         </div>
 
         <div className='stat'>
-          <div className='stat-title'>BookOffers</div>
+          <div className='stat-title'>ブックオファー</div>
           <div className='stat-value'>
             <span className='font-mono text-3xl'>${xrpUSD?.toFixed(4) || '0.0000'}</span>
           </div>
-          <div className='stat-desc text-accent'>DEX PRICE XRP/USD</div>
+          <div className='stat-desc text-accent'>DEX 価格 XRP/USD</div>
         </div>
       </div>
 
       {user?.account && (
         <div className='responsive'>
           <div className='stat'>
-            <div className='stat-title'>XRP Price</div>
+            <div className='stat-title'>XRP 価格</div>
             <div className='stat-value flex flex-col-reverse gap-2'>
               <span className='font-mono text-3xl'>JPY ¥{priceJPY?.XRP?.toFixed(2) || '0.00'}</span>
               <span className='font-mono text-3xl'>USD ${priceUSD?.XRP?.toFixed(4) || '0.0000'}</span>
@@ -61,7 +61,7 @@ export const Fetch = () => {
           </div>
 
           <div className='stat'>
-            <div className='stat-title'>Balance</div>
+            <div className='stat-title'>残高</div>
             <div className='stat-value font-mono text-3xl'>
               <span className='font-mono text-3xl'>{balanceData || '0'}</span>
             </div>

@@ -20,6 +20,9 @@ export const Nav = () => {
       <NavLink to='/community' className='btn btn-sm btn-outline current-page'>
         🎯 コミュニティ
       </NavLink>
+      <NavLink to='/dashboard' className='btn btn-sm btn-outline current-page'>
+        🚀 ダッシュボード
+      </NavLink>
       <NavLink to='/portfolio' className='btn btn-sm btn-outline current-page'>
         💼 ポートフォリオ
       </NavLink>

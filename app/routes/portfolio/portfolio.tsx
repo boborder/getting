@@ -26,10 +26,12 @@ const usePortfolio = () => {
 }
 
 export async function loader({ context }: Route.LoaderArgs) {
+  console.log(context.isProduction)
   return { message: 'portfolio' }
 }
 
 export default function Portfolio({ loaderData }: Route.ComponentProps) {
+  console.log(loaderData)
   const { user } = useUser()
   useHydrateAtoms([
     [

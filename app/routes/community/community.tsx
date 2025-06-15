@@ -40,13 +40,14 @@ interface CommunityPost {
 type ActionData = { lastResult: any } | { success: true; message: string; lastResult: any }
 
 // jotai atoms
-const postsAtom = atom<CommunityPost[]>([])
+// const postsAtom = atom<CommunityPost[]>([])
 const filterAtom = atom<string>('all')
 
 // SWR fetcher
 const fetcher = (url: string): Promise<CommunityPost[]> => fetch(url).then((res) => res.json())
 
 export async function loader({ context }: Route.LoaderArgs) {
+  console.log(context.isProduction)
   // 模擬的なコミュニティデータ
   const mockPosts: CommunityPost[] = [
     {
@@ -111,18 +112,18 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Community({ loaderData }: Route.ComponentProps) {
-  const { posts, stats } = useLoaderData<typeof loader>()
+  const { posts } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>() as ActionData | undefined
   const { user } = useUser()
 
   // jotai state management
-  const [localPosts, setLocalPosts] = useAtom(postsAtom)
+  // const [localPosts, setLocalPosts] = useAtom(postsAtom)
   const [filter, setFilter] = useAtom(filterAtom)
 
   // SWR for real-time updates
-  const { data: livePosts, mutate } = useSWR<CommunityPost[]>('/api/community/posts', fetcher, {
+  const { data: livePosts } = useSWR<CommunityPost[]>('/api/community/posts', fetcher, {
     fallbackData: posts,
-    refreshInterval: 30000, // 30秒ごとに更新
+    refreshInterval: 30000,
   })
 
   // conform form
@@ -168,9 +169,9 @@ export default function Community({ loaderData }: Route.ComponentProps) {
           <p className='text-accent/80'>XRPLコミュニティで情報共有しよう</p>
 
           <StatsContainer className='mt-4'>
-            <StatItem title='総投稿数' value={stats.totalPosts} description='posts' variant='primary' />
-            <StatItem title='アクティブユーザー' value={stats.activeUsers} description='users' variant='secondary' />
-            <StatItem title='今日の投稿' value={stats.todayPosts} description='today' variant='accent' />
+            <StatItem title='総投稿数' value={loaderData.stats.totalPosts} description='posts' variant='primary' />
+            <StatItem title='アクティブユーザー' value={loaderData.stats.activeUsers} description='users' variant='secondary' />
+            <StatItem title='今日の投稿' value={loaderData.stats.todayPosts} description='today' variant='accent' />
           </StatsContainer>
         </div>
       </div>

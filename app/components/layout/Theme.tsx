@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from 'jotai'
-import { atomWithStorage, useHydrateAtoms } from "jotai/utils";
+import { atomWithStorage } from "jotai/utils";
 
 type Theme = 'dark' | 'light'
 

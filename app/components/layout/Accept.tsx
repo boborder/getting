@@ -1,11 +1,11 @@
-import { useStore } from '~/utils'
+import { useStore } from '~/utils/useStore'
 
 export const Accept = () => {
   const [accept, setAccept] = useStore({
     key: 'accept',
     init: false,
     store: {
-      onGet: (key) => JSON.parse(localStorage.getItem(key as string) || 'false'),
+      onGet: () => JSON.parse(localStorage.getItem('accept') || 'false'),
       onSet: (key, data) => localStorage.setItem(key as string, JSON.stringify(data)),
     },
   })
@@ -13,7 +13,7 @@ export const Accept = () => {
     key: 'alert',
     init: true,
     store: {
-      onGet: (key) => JSON.parse(sessionStorage.getItem(key as string) || 'true'),
+      onGet: () => JSON.parse(sessionStorage.getItem('alert') || 'true'),
       onSet: (key, data) => sessionStorage.setItem(key as string, JSON.stringify(data)),
     },
   })
@@ -36,9 +36,7 @@ export const Accept = () => {
           />
         </svg>
         <div className='flex-1 min-w-0'>
-          <span className='text-xs sm:text-sm break-words'>
-            🍪 このサイトでは、クッキーを使用しています。
-          </span>
+          <span className='text-xs sm:text-sm break-words'>🍪 このサイトでは、クッキーを使用しています。</span>
         </div>
         <div className='flex flex-row gap-1 md:gap-2 shrink-0'>
           <button className='btn btn-xs md:btn-sm btn-outline w-auto' onMouseDown={() => setAlert(false)}>
