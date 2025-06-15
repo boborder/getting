@@ -1,0 +1,145 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap");
+
+@import "tailwindcss";
+
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+
+  --color-primary: oklch(53.31% 0.2536 267.4);
+  --color-primary-content: oklch(98.44% 0.0045 258.32);
+  --color-secondary: oklch(52.16% 0.0469 272.68);
+  --color-secondary-content: oklch(38.44% 0.1145 258.32);
+  --color-accent: oklch(83.62% 0.1439 81.75);
+  --color-accent-content: oklch(23.45% 0.3589 288.88);
+  --color-neutral: oklch(26.49% 0.0727 272.83);
+  --color-neutral-content: oklch(98.44% 0.0045 258.32);
+  --color-base-100: oklch(18% 0.0846 266.3);
+  --color-base-200: oklch(23.45% 0.3589 288.88);
+  --color-info: oklch(98.44% 0.0045 258.32);
+  --color-success: oklch(79.62% 0.1651 159.48);
+  --color-warning: oklch(68.97% 0.1998 23.98);
+  --color-error: oklch(76.15% 0.0235 271.97);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0.5;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+
+  --color-primary: oklch(50.44% 0.2536 258.32);
+  --color-primary-content: oklch(98.44% 0.0045 258.32);
+  --color-secondary: oklch(52.44% 0.1469 258.32);
+  --color-secondary-content: oklch(75.44% 0.333 258.32);
+  --color-accent: oklch(83.62% 0.1439 81.32);
+  --color-accent-content: oklch(44.44% 0.2135 258.32);
+  --color-neutral: oklch(26.49% 0.0727 258.32);
+  --color-neutral-content: oklch(98.44% 0.0045 258.32);
+  --color-base-100: oklch(98.44% 0.0045 258.32);
+  --color-base-200: oklch(44.44% 0.2135 258.32);
+  --color-info: oklch(76.15% 0.0235 271.97);
+  --color-success: oklch(79.62% 0.1651 159.48);
+  --color-warning: oklch(68.97% 0.1998 23.98);
+  --color-error: oklch(86.15% 0.3235 83.32);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0.5;
+}
+
+@utility contents-center {
+  @apply min-h-[60vh] grid place-content-center place-items-center text-center;
+}
+
+@utility current-page {
+  @apply aria-[current=page]:bg-primary/30;
+}
+
+@utility responsive {
+  @apply stats stats-vertical lg:stats-horizontal;
+}
+
+/* モバイル対応ユーティリティ */
+@utility mobile-safe {
+  @apply w-full max-w-none min-w-0 overflow-hidden;
+}
+
+@utility mobile-text {
+  @apply text-xs sm:text-sm break-words;
+}
+
+@utility mobile-padding {
+  @apply px-2 sm:px-4 lg:px-6 py-2 sm:py-4;
+}
+
+@utility mobile-gap {
+  @apply gap-1 sm:gap-2 lg:gap-3;
+}
+
+@utility mobile-button {
+  @apply btn-xs sm:btn-sm lg:btn-md w-full sm:w-auto;
+}
+
+@layer base {
+  body {
+    font-family: "Roboto Mono", monospace, sans-serif;
+    @apply overflow-x-hidden;
+  }
+  a {
+    @apply transition duration-[0.3s] hover:link;
+  }
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="date"],
+  input[type="time"],
+  input[type="number"] {
+    @apply input validator w-full;
+  }
+  input[type="file"] {
+    @apply file-input w-full;
+  }
+  input[type="radio"] {
+    @apply radio;
+  }
+  input[type="range"] {
+    @apply range range-primary w-full;
+  }
+  select {
+    @apply select w-full;
+  }
+  textarea {
+    @apply textarea w-full;
+  }
+  button[type="button"] {
+    @apply btn btn-primary text-sm sm:text-lg;
+  }
+  button[type="submit"] {
+    @apply btn btn-neutral text-sm sm:text-lg;
+  }
+  img {
+    @apply mx-auto object-cover hover:scale-105 active:scale-105 max-w-full h-auto;
+  }
+  progress {
+    @apply progress progress-primary w-full;
+  }
+}

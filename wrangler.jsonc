@@ -1,0 +1,57 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "xrp",
+  "compatibility_date": "2025-06-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./workers/app.ts",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "API_URL": "https://xn--u8j4bj2job.xn--q9jyb4c",
+    "APP_ENV": "production"
+  },
+  "routes": [
+    {
+      "pattern": "xn--u8j4bj2job.xn--q9jyb4c",
+      "custom_domain": true
+    }
+  ],
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "getting",
+      "database_id": "2c25b4f3-2ced-483d-b6d2-cad46d48ae60",
+      "migrations_dir": "./drizzle/migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "97438016e2bf4989b1f9394ab0430244",
+      "preview_id": "97438016e2bf4989b1f9394ab0430244"
+    }
+  ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "R2",
+  //     "bucket_name": ""
+  //   }
+  // ]
+  "services": [
+    {
+      "binding": "OIDC",
+      "service": "server-service"
+    }
+  ]
+}
