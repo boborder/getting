@@ -5,9 +5,7 @@ export const scheduled: ExportedHandlerScheduledHandler<Env> = async (
 ) => {
   switch (controller.cron) {
     case '*/5 * * * *':
-      ctx.waitUntil(
-        fetch(env.API_URL + '/sw/vanity?keyword=b').then((res) => console.log(res)),
-      )
+      ctx.waitUntil(fetch(env.API_URL + '/openapi.json').then((res) => console.log(res)))
       break
   }
   console.log(JSON.stringify(controller, null, 2))

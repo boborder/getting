@@ -36,7 +36,9 @@ export const Accept = () => {
           />
         </svg>
         <div className='flex-1 min-w-0'>
-          <span className='text-xs sm:text-sm break-words'>🍪 このサイトでは、クッキーを使用しています。</span>
+          <span className='text-xs sm:text-sm break-words'>
+            ⚠️ このサイトは、デモサイトですが、トランザクションは送信されるので、慎重にご利用ください。
+          </span>
         </div>
         <div className='flex flex-row gap-1 md:gap-2 shrink-0'>
           <button className='btn btn-xs md:btn-sm btn-outline w-auto' onMouseDown={() => setAlert(false)}>

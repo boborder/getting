@@ -10,9 +10,9 @@ export default function Layout() {
       {location && <Loading />}
       <div className='min-h-[75vh] mx-1 border-2 border-primary rounded-box'>
         <div className='min-h-[64vh] p-1 grid place-content-center place-items-center text-center'>
+          <Accept />
           <Outlet />
         </div>
-        <Accept />
       </div>
     </>
   )

@@ -464,7 +464,7 @@ MIT License - 詳細は [LICENSE](LICENSE) ファイルを参照してくださ�
 
 _暗号通貨投資をもっと身近に、みんなで一緒に成長しよう_
 
-[![GitHub Stars](https://img.shields.io/github/stars/your-username/getting?style=social)](https://github.com/boborder)
-[![Twitter Follow](https://img.shields.io/twitter/follow/your_twitter?style=social)](https://twitter.com/dayjobdoor)
+[![GitHub Stars](https://img.shields.io/github/stars/boborder/getting?style=social)](https://github.com/boborder)
+[![Twitter Follow](https://img.shields.io/twitter/follow/dayjobdoor?style=social)](https://twitter.com/dayjobdoor)
 
 </div>

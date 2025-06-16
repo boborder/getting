@@ -11,8 +11,8 @@ export const Header = () => {
       <div className='navbar-start gap-1'>
         <SideDrawerButton />
         <NavLink to='/' className='btn btn-ghost px-0.5'>
-          <img src='/assets/logo.png' alt='logo' className='h-8 w-8' />
-          <h1 className='text-xl font-bold'>やってるか</h1>
+          {/* <img src='/assets/avatar.png' alt='logo' className='h-8 w-8' /> */}
+          <h1 className='font-bold'>みんな〜やってるか！</h1>
         </NavLink>
       </div>
 

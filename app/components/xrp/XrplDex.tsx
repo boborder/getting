@@ -1,25 +1,15 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
-import useSWR from 'swr'
-import * as v from 'valibot'
-import type { AccountLinesResponse, BookOffersResponse } from 'xrpl'
+import useSWR, { mutate } from 'swr'
+import type { BookOffersResponse } from 'xrpl'
 import { Card, CardBody, CardTitle } from '~/components/ui/Card'
 import { StatItem, StatsContainer } from '~/components/ui/Stats'
 import { dig, getTx } from '~/utils/dig'
 import { formatXRPBalance, useXRPLAccountData, useXRPLBalance } from '~/utils/xrpl'
-import { getStore, setStore, useUser } from '~/utils/xumm'
+import { useUser } from '~/utils/xumm'
+import { Xaman } from './XummAuth'
 
 // ===== 型定義 =====
-
-interface TokenInfo {
-  currency: string
-  issuer?: string
-  name?: string
-  symbol?: string
-  balance?: string
-  limit?: string
-  isNative?: boolean
-}
 
 interface SwapQuote {
   inputAmount: string
@@ -29,28 +19,14 @@ interface SwapQuote {
   fee: string
 }
 
-// ===== バリデーションスキーマ =====
+// ===== SWR キー定数 =====
 
-const SwapFormSchema = v.object({
-  fromToken: v.string(),
-  toToken: v.string(),
-  amount: v.pipe(v.string(), v.transform(Number), v.number()),
-  slippage: v.optional(v.pipe(v.string(), v.transform(Number), v.number())),
-})
-
-const PaymentFormSchema = v.object({
-  destination: v.pipe(v.string(), v.regex(/^r[a-zA-Z0-9]{24,33}$/, '有効なXRPLアドレスを入力してください')),
-  amount: v.pipe(v.string(), v.transform(Number), v.number()),
-  currency: v.string(),
-  issuer: v.optional(v.string()),
-  memo: v.optional(v.string()),
-})
-
-const TrustSetFormSchema = v.object({
-  currency: v.pipe(v.string(), v.minLength(3, '通貨コードは3文字以上です')),
-  issuer: v.pipe(v.string(), v.regex(/^r[a-zA-Z0-9]{24,33}$/, '有効なIssuerアドレスを入力してください')),
-  limit: v.pipe(v.string(), v.transform(Number), v.number()),
-})
+const SWR_KEYS = {
+  ACTIVE_TAB: 'xrpl-dex-active-tab',
+  SWAP_FORM: 'xrpl-dex-swap-form',
+  PAYMENT_FORM: 'xrpl-dex-payment-form',
+  TRUSTSET_FORM: 'xrpl-dex-trustset-form',
+} as const
 
 // ===== Jotai Atoms (最小限) =====
 
@@ -158,6 +134,18 @@ async function fetchBookOffers(
   return data.result
 }
 
+// ===== 共通ペイロード実行ロジック =====
+
+async function executePayload(xumm: any, payload: any) {
+  if (!payload?.next?.always) return
+
+  if (xumm.xapp) {
+    await xumm.xapp.openSignRequest(payload)
+  } else {
+    window.open(payload.next.always, '_blank')
+  }
+}
+
 // ===== メインコンポーネント =====
 
 interface XrplDexProps {
@@ -258,23 +246,171 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
     { refreshInterval: 5000 },
   )
 
+  // ===== SWR Mutate-based ハンドラー関数群 =====
+
+  const handleTabChange = (tab: 'swap' | 'payment' | 'trustset') => {
+    setActiveTab(tab)
+    mutate(SWR_KEYS.ACTIVE_TAB, tab, false)
+    onTabChange?.(tab)
+  }
+
+  const handleSwapFormChange = (updates: Partial<typeof swapForm>) => {
+    const newForm = { ...swapForm, ...updates }
+    setSwapForm(newForm)
+    mutate(SWR_KEYS.SWAP_FORM, newForm, false)
+  }
+
+  const handlePaymentFormChange = (updates: Partial<typeof paymentForm>) => {
+    const newForm = { ...paymentForm, ...updates }
+    setPaymentForm(newForm)
+    mutate(SWR_KEYS.PAYMENT_FORM, newForm, false)
+  }
+
+  const handleTrustSetFormChange = (updates: Partial<typeof trustSetForm>) => {
+    const newForm = { ...trustSetForm, ...updates }
+    setTrustSetForm(newForm)
+    mutate(SWR_KEYS.TRUSTSET_FORM, newForm, false)
+  }
+
+  const handlePaymentCurrencyChange = (currency: string) => {
+    const token = availableTokens.find((t: any) => t.currency === currency)
+    handlePaymentFormChange({
+      currency,
+      issuer: token?.issuer || '',
+    })
+  }
+
+  // ===== トランザクション実行関数群 =====
+
+  const executeSwap = async () => {
+    if (!xumm || !quote || !user?.account) return
+
+    const fromToken = availableTokens.find((t: any) => t.currency === swapForm.fromToken)
+    const toToken = availableTokens.find((t: any) => t.currency === swapForm.toToken)
+
+    if (!fromToken || !toToken) return
+
+    const payload = await xumm.payload?.create({
+      TransactionType: 'OfferCreate',
+      Account: user.account,
+      TakerGets:
+        fromToken.currency === 'XRP'
+          ? String(Number(swapForm.amount) * 1000000)
+          : {
+              currency: fromToken.currency,
+              issuer: fromToken.issuer || '',
+              value: swapForm.amount,
+            },
+      TakerPays:
+        toToken.currency === 'XRP'
+          ? String(Number(quote.outputAmount) * 1000000)
+          : {
+              currency: toToken.currency,
+              issuer: toToken.issuer || '',
+              value: quote.outputAmount,
+            },
+      Memos: [
+        {
+          Memo: {
+            MemoType: convertStringToHex('DEX_SWAP'),
+            MemoData: convertStringToHex(`${swapForm.fromToken}->${swapForm.toToken}`),
+          },
+        },
+      ],
+    })
+
+    await executePayload(xumm, payload)
+  }
+
+  const executePayment = async () => {
+    if (!xumm || !user?.account) return
+
+    const payload = await xumm.payload?.create({
+      TransactionType: 'Payment',
+      Account: user.account,
+      Destination: paymentForm.destination,
+      Amount:
+        paymentForm.currency === 'XRP'
+          ? String(Number(paymentForm.amount) * 1000000)
+          : {
+              currency: paymentForm.currency,
+              issuer: paymentForm.issuer,
+              value: paymentForm.amount,
+            },
+      ...(paymentForm.memo && {
+        Memos: [
+          {
+            Memo: {
+              MemoType: convertStringToHex('PAYMENT'),
+              MemoData: convertStringToHex(paymentForm.memo),
+            },
+          },
+        ],
+      }),
+    })
+
+    await executePayload(xumm, payload)
+  }
+
+  const executeTrustSet = async () => {
+    if (!xumm || !user?.account) return
+
+    const payload = await xumm.payload?.create({
+      TransactionType: 'TrustSet',
+      Account: user.account,
+      LimitAmount: {
+        currency: trustSetForm.currency,
+        issuer: trustSetForm.issuer,
+        value: trustSetForm.limit,
+      },
+      Memos: [
+        {
+          Memo: {
+            MemoType: convertStringToHex('TRUST_SET'),
+            MemoData: convertStringToHex(`${trustSetForm.currency}:${trustSetForm.issuer}`),
+          },
+        },
+      ],
+    })
+
+    await executePayload(xumm, payload)
+  }
+
+  // ===== データ生成関数群 =====
+
+  const generateQuoteStats = () => [
+    {
+      label: 'レート',
+      value: `1 ${swapForm.fromToken} = ${quote?.rate.toFixed(6)} ${swapForm.toToken}`,
+      icon: '📈',
+    },
+    { label: '受取予定', value: `${quote?.outputAmount} ${swapForm.toToken}`, icon: '💎' },
+    { label: '手数料', value: `${quote?.fee} XRP`, icon: '💸' },
+    { label: 'スリッページ', value: `${quote?.slippage}%`, icon: '📊' },
+  ]
+
+  const generateTabButtons = () => [
+    { key: 'swap', icon: '🔄', label: 'スワップ' },
+    { key: 'payment', icon: '💸', label: '送金' },
+    { key: 'trustset', icon: '🤝', label: 'Trust Set' },
+  ]
+
   // ===== ローディング & エラー状態 =====
   const isLoading = accountLoading || balanceLoading
   const error = accountError
 
   if (!user?.account) {
     return (
-      <Card size='sm' background='base-200'>
-        <CardBody className='p-6 text-center'>
-          <div className='space-y-6'>
-            <div className='text-6xl'>🔐</div>
-            <div>
-              <CardTitle size='lg' className='mb-2'>
-                🚀 XRPL DEX
-              </CardTitle>
-              <p className='text-sm opacity-70 mb-4'>XUMMでサインインしてDEX機能を利用してください</p>
-              <div className='badge badge-warning'>認証が必要です</div>
-            </div>
+      <Card size='sm'>
+        <CardBody className='p-6 text-center space-y-6'>
+          <div className='text-6xl'>🔐</div>
+          <div>
+            <CardTitle size='lg' className='mb-2'>
+              🚀 XRPL DEX
+            </CardTitle>
+            <p className='text-sm mb-4'>XUMMでサインインしてDEX機能を利用してください</p>
+            <Xaman />
+            <div className='badge badge-warning mt-2'>認証が必要です</div>
           </div>
         </CardBody>
       </Card>
@@ -284,23 +420,15 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
   return (
     <div className='space-y-4'>
       {/* アカウント情報カード */}
-      <Card size='sm' className='bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20'>
+      <Card size='sm'>
         <CardBody className='p-4'>
-          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4'>
+          <div className='flex justify-between items-center mb-4'>
             <CardTitle size='sm' className='flex items-center gap-2'>
-              💼{' '}
-              <span className='bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'>
-                DEX アカウント
-              </span>
+              💼 <span>DEX アカウント</span>
             </CardTitle>
             <div className='flex gap-2'>
               <div className='badge badge-success badge-sm'>🔐 認証済み</div>
-              {isLoading && (
-                <div className='badge badge-warning badge-sm'>
-                  <span className='loading loading-spinner loading-xs mr-1'></span>
-                  更新中
-                </div>
-              )}
+              {isLoading && <div className='badge badge-warning badge-sm'>更新中</div>}
             </div>
           </div>
 
@@ -327,40 +455,28 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
           </StatsContainer>
         </CardBody>
       </Card>
-      <div className='alert alert-error shadow-lg'>
-        <div>
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            className='stroke-current flex-shrink-0 h-6 w-6'
-            fill='none'
-            viewBox='0 0 24 24'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              d='M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
-            />
-          </svg>
-          <span className='text-sm'>{error?.message || 'エラーが発生しました'}</span>
+
+      {/* エラー表示 */}
+      {error && (
+        <div className='alert alert-error'>
+          <span>{error.message || 'エラーが発生しました'}</span>
         </div>
-      </div>
+      )}
+
       {/* 最新トランザクション */}
       {digData?.tx && digData.tx.length > 0 && (
-        <Card size='sm' background='base-200'>
+        <Card size='sm'>
           <CardBody className='p-4'>
-            <CardTitle size='sm' className='mb-3 flex items-center gap-2'>
+            <CardTitle size='sm' className='mb-3'>
               📋 最新トランザクション
             </CardTitle>
-            <div className='bg-gradient-to-r from-base-100 to-base-100/50 p-3 rounded-lg border border-base-300'>
-              <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
+            <div className='bg-base-100 p-3 rounded border'>
+              <div className='flex justify-between items-center'>
                 <div className='flex items-center gap-3'>
                   <div className='badge badge-primary badge-sm'>{(digData.tx[0] as any)?.tx?.TransactionType}</div>
-                  <div className='text-xs font-mono opacity-70'>
-                    {(digData.tx[0] as any)?.tx?.hash?.slice(0, 10)}...
-                  </div>
+                  <div className='text-xs font-mono'>{(digData.tx[0] as any)?.tx?.hash?.slice(0, 10)}...</div>
                 </div>
-                <div className='text-xs opacity-70'>
+                <div className='text-xs'>
                   {new Date(((digData.tx[0] as any)?.tx?.date || 0) * 1000 + 946684800000).toLocaleString()}
                 </div>
               </div>
@@ -368,52 +484,43 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
           </CardBody>
         </Card>
       )}
+
+      {/* タブナビゲーション */}
       <div className='flex justify-center'>
-        <nav className='bg-base-200/50 backdrop-blur-sm p-2 rounded-2xl border border-base-300 shadow-lg'>
+        <div className='bg-base-200 p-2 rounded-box'>
           <div className='flex gap-1'>
-            {[
-              { key: 'swap', icon: '🔄', label: 'スワップ' },
-              { key: 'payment', icon: '💸', label: '送金' },
-              { key: 'trustset', icon: '🤝', label: 'Trust Set' },
-            ].map(({ key, icon, label }) => (
+            {generateTabButtons().map(({ key, icon, label }: { key: string; icon: string; label: string }) => (
               <button
                 key={key}
-                className={`btn btn-sm transition-all duration-200 ${
-                  activeTab === key ? 'btn-primary shadow-lg scale-105' : 'btn-ghost hover:btn-outline'
-                }`}
-                onClick={() => {
-                  setActiveTab(key as any)
-                  onTabChange?.(key as any)
-                }}
+                className={`btn btn-sm ${activeTab === key ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => handleTabChange(key as any)}
               >
-                <span className='text-lg'>{icon}</span>
-                <span className='hidden sm:inline text-sm'>{label}</span>
+                <span>{icon}</span>
+                <span className='hidden sm:inline'>{label}</span>
               </button>
             ))}
           </div>
-        </nav>
+        </div>
       </div>
+
       {/* スワップタブ */}
       {activeTab === 'swap' && (
-        <Card size='sm' className='bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/20'>
+        <Card size='sm'>
           <CardBody className='p-4'>
-            <CardTitle size='sm' className='mb-4 flex items-center gap-2'>
-              🔄{' '}
-              <span className='bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent'>
-                トークンスワップ
-              </span>
+            <CardTitle size='sm' className='mb-4'>
+              🔄 トークンスワップ
             </CardTitle>
             <div className='space-y-6'>
               <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
                 <div className='form-control'>
                   <label htmlFor='fromToken' className='label'>
-                    <span className='label-text font-medium flex items-center gap-2'>📤 From</span>
+                    <span className='label-text'>📤 From</span>
                   </label>
                   <select
                     id='fromToken'
-                    className='select select-bordered w-full focus:border-primary transition-colors'
+                    className='select select-bordered'
                     value={swapForm.fromToken}
-                    onChange={(e) => setSwapForm({ ...swapForm, fromToken: e.target.value })}
+                    onChange={(e) => handleSwapFormChange({ fromToken: e.target.value })}
                   >
                     {availableTokens.map((token: any) => (
                       <option key={'from-' + token.currency + '-' + (token.issuer || 'native')} value={token.currency}>
@@ -424,13 +531,13 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
                 </div>
                 <div className='form-control'>
                   <label htmlFor='toToken' className='label'>
-                    <span className='label-text font-medium flex items-center gap-2'>📥 To</span>
+                    <span className='label-text'>📥 To</span>
                   </label>
                   <select
                     id='toToken'
-                    className='select select-bordered w-full focus:border-primary transition-colors'
+                    className='select select-bordered'
                     value={swapForm.toToken}
-                    onChange={(e) => setSwapForm({ ...swapForm, toToken: e.target.value })}
+                    onChange={(e) => handleSwapFormChange({ toToken: e.target.value })}
                   >
                     <option value=''>選択してください</option>
                     {availableTokens
@@ -447,27 +554,27 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
               <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
                 <div className='form-control'>
                   <label htmlFor='swapAmount' className='label'>
-                    <span className='label-text font-medium flex items-center gap-2'>💰 金額</span>
+                    <span className='label-text'>💰 金額</span>
                   </label>
                   <input
                     id='swapAmount'
                     type='number'
-                    className='input input-bordered w-full focus:border-primary transition-colors'
+                    className='input input-bordered'
                     value={swapForm.amount}
-                    onChange={(e) => setSwapForm({ ...swapForm, amount: e.target.value })}
+                    onChange={(e) => handleSwapFormChange({ amount: e.target.value })}
                     placeholder='スワップする金額'
                   />
                 </div>
                 <div className='form-control'>
                   <label htmlFor='slippage' className='label'>
-                    <span className='label-text font-medium flex items-center gap-2'>📊 スリッページ (%)</span>
+                    <span className='label-text'>📊 スリッページ (%)</span>
                   </label>
                   <input
                     id='slippage'
                     type='number'
-                    className='input input-bordered w-full focus:border-primary transition-colors'
+                    className='input input-bordered'
                     value={swapForm.slippage}
-                    onChange={(e) => setSwapForm({ ...swapForm, slippage: e.target.value })}
+                    onChange={(e) => handleSwapFormChange({ slippage: e.target.value })}
                     placeholder='0.5'
                     step='0.1'
                   />
@@ -475,82 +582,27 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
               </div>
 
               {quote && (
-                <div className='bg-gradient-to-r from-success/10 to-primary/10 p-4 rounded-xl border border-success/30'>
-                  <h4 className='font-semibold mb-3 flex items-center gap-2'>
+                <div className='bg-success/10 p-4 rounded border border-success/30'>
+                  <h4 className='font-semibold mb-3'>
                     📊 スワップ見積もり
-                    <div className='badge badge-success badge-sm'>✅ 取得済み</div>
+                    <div className='badge badge-success badge-sm ml-2'>取得済み</div>
                   </h4>
                   <div className='grid grid-cols-2 lg:grid-cols-4 gap-3'>
-                    {[
-                      {
-                        label: 'レート',
-                        value: `1 ${swapForm.fromToken} = ${quote.rate.toFixed(6)} ${swapForm.toToken}`,
-                        icon: '📈',
-                      },
-                      { label: '受取予定', value: `${quote.outputAmount} ${swapForm.toToken}`, icon: '💎' },
-                      { label: '手数料', value: `${quote.fee} XRP`, icon: '💸' },
-                      { label: 'スリッページ', value: `${quote.slippage}%`, icon: '📊' },
-                    ].map(({ label, value, icon }) => (
-                      <div key={label} className='bg-base-100 p-3 rounded-lg text-center'>
-                        <div className='text-xs opacity-70 mb-1'>
-                          {icon} {label}
+                    {generateQuoteStats().map(
+                      ({ label, value, icon }: { label: string; value: string; icon: string }) => (
+                        <div key={label} className='bg-base-100 p-3 rounded text-center'>
+                          <div className='text-xs mb-1'>
+                            {icon} {label}
+                          </div>
+                          <div className='font-mono text-sm font-medium'>{value}</div>
                         </div>
-                        <div className='font-mono text-sm font-medium'>{value}</div>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </div>
                 </div>
               )}
 
-              <button
-                className='btn btn-primary btn-lg w-full shadow-lg hover:shadow-xl transition-all duration-200'
-                onClick={async () => {
-                  if (!xumm || !quote || !user?.account) return
-
-                  const fromToken = availableTokens.find((t: any) => t.currency === swapForm.fromToken)
-                  const toToken = availableTokens.find((t: any) => t.currency === swapForm.toToken)
-
-                  if (!fromToken || !toToken) return
-
-                  const payload = await xumm.payload?.create({
-                    TransactionType: 'OfferCreate',
-                    Account: user.account,
-                    TakerGets:
-                      fromToken.currency === 'XRP'
-                        ? String(Number(swapForm.amount) * 1000000)
-                        : {
-                            currency: fromToken.currency,
-                            issuer: fromToken.issuer || '',
-                            value: swapForm.amount,
-                          },
-                    TakerPays:
-                      toToken.currency === 'XRP'
-                        ? String(Number(quote.outputAmount) * 1000000)
-                        : {
-                            currency: toToken.currency,
-                            issuer: toToken.issuer || '',
-                            value: quote.outputAmount,
-                          },
-                    Memos: [
-                      {
-                        Memo: {
-                          MemoType: convertStringToHex('DEX_SWAP'),
-                          MemoData: convertStringToHex(`${swapForm.fromToken}->${swapForm.toToken}`),
-                        },
-                      },
-                    ],
-                  })
-
-                  if (payload?.next.always) {
-                    if (xumm.xapp) {
-                      await xumm.xapp.openSignRequest(payload)
-                    } else {
-                      window.open(payload.next.always, '_blank')
-                    }
-                  }
-                }}
-                disabled={!quote || isLoading}
-              >
+              <button className='btn btn-primary btn-lg w-full' onClick={executeSwap} disabled={!quote || isLoading}>
                 {isLoading ? (
                   <>
                     <span className='loading loading-spinner'></span>
@@ -567,24 +619,25 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
           </CardBody>
         </Card>
       )}
+
       {/* 送金タブ */}
       {activeTab === 'payment' && (
-        <Card size='sm' className='bg-gradient-to-br from-secondary/5 to-accent/5 border border-secondary/20'>
+        <Card size='sm'>
           <CardBody className='p-4'>
-            <CardTitle size='sm' className='mb-4 flex items-center gap-2'>
-              💸 <span className='bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent'>送金</span>
+            <CardTitle size='sm' className='mb-4'>
+              💸 送金
             </CardTitle>
             <div className='space-y-6'>
               <div className='form-control'>
                 <label htmlFor='destination' className='label'>
-                  <span className='label-text font-medium flex items-center gap-2'>🎯 送金先アドレス</span>
+                  <span className='label-text'>🎯 送金先アドレス</span>
                 </label>
                 <input
                   id='destination'
                   type='text'
-                  className='input input-bordered w-full focus:border-secondary transition-colors'
+                  className='input input-bordered'
                   value={paymentForm.destination}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, destination: e.target.value })}
+                  onChange={(e) => handlePaymentFormChange({ destination: e.target.value })}
                   placeholder='r...'
                 />
               </div>
@@ -592,20 +645,13 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <div className='form-control'>
                   <label htmlFor='paymentCurrency' className='label'>
-                    <span className='label-text font-medium flex items-center gap-2'>💰 通貨</span>
+                    <span className='label-text'>💰 通貨</span>
                   </label>
                   <select
                     id='paymentCurrency'
-                    className='select select-bordered w-full focus:border-secondary transition-colors'
+                    className='select select-bordered'
                     value={paymentForm.currency}
-                    onChange={(e) => {
-                      const token = availableTokens.find((t: any) => t.currency === e.target.value)
-                      setPaymentForm({
-                        ...paymentForm,
-                        currency: e.target.value,
-                        issuer: token?.issuer || '',
-                      })
-                    }}
+                    onChange={(e) => handlePaymentCurrencyChange(e.target.value)}
                   >
                     {availableTokens.map((token: any) => (
                       <option key={token.currency + '-' + (token.issuer || 'native')} value={token.currency}>
@@ -616,14 +662,14 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
                 </div>
                 <div className='form-control'>
                   <label htmlFor='paymentAmount' className='label'>
-                    <span className='label-text font-medium flex items-center gap-2'>📊 金額</span>
+                    <span className='label-text'>📊 金額</span>
                   </label>
                   <input
                     id='paymentAmount'
                     type='number'
-                    className='input input-bordered w-full focus:border-secondary transition-colors'
+                    className='input input-bordered'
                     value={paymentForm.amount}
-                    onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                    onChange={(e) => handlePaymentFormChange({ amount: e.target.value })}
                     placeholder='送金金額'
                   />
                 </div>
@@ -631,55 +677,21 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
 
               <div className='form-control'>
                 <label htmlFor='memo' className='label'>
-                  <span className='label-text font-medium flex items-center gap-2'>📝 メモ（オプション）</span>
+                  <span className='label-text'>📝 メモ（オプション）</span>
                 </label>
                 <input
                   id='memo'
                   type='text'
-                  className='input input-bordered w-full focus:border-secondary transition-colors'
+                  className='input input-bordered'
                   value={paymentForm.memo}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, memo: e.target.value })}
+                  onChange={(e) => handlePaymentFormChange({ memo: e.target.value })}
                   placeholder='メモ'
                 />
               </div>
 
               <button
-                className='btn btn-secondary btn-lg w-full shadow-lg hover:shadow-xl transition-all duration-200'
-                onClick={async () => {
-                  if (!xumm || !user?.account) return
-
-                  const payload = await xumm.payload?.create({
-                    TransactionType: 'Payment',
-                    Account: user.account,
-                    Destination: paymentForm.destination,
-                    Amount:
-                      paymentForm.currency === 'XRP'
-                        ? String(Number(paymentForm.amount) * 1000000)
-                        : {
-                            currency: paymentForm.currency,
-                            issuer: paymentForm.issuer,
-                            value: paymentForm.amount,
-                          },
-                    ...(paymentForm.memo && {
-                      Memos: [
-                        {
-                          Memo: {
-                            MemoType: convertStringToHex('PAYMENT'),
-                            MemoData: convertStringToHex(paymentForm.memo),
-                          },
-                        },
-                      ],
-                    }),
-                  })
-
-                  if (payload?.next.always) {
-                    if (xumm.xapp) {
-                      await xumm.xapp.openSignRequest(payload)
-                    } else {
-                      window.open(payload.next.always, '_blank')
-                    }
-                  }
-                }}
+                className='btn btn-secondary btn-lg w-full'
+                onClick={executePayment}
                 disabled={!paymentForm.destination || !paymentForm.amount}
               >
                 🚀 送金を実行
@@ -688,25 +700,25 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
           </CardBody>
         </Card>
       )}
+
       {/* Trust Setタブ */}
       {activeTab === 'trustset' && (
-        <Card size='sm' className='bg-gradient-to-br from-accent/5 to-info/5 border border-accent/20'>
+        <Card size='sm'>
           <CardBody className='p-4'>
-            <CardTitle size='sm' className='mb-4 flex items-center gap-2'>
-              🤝{' '}
-              <span className='bg-gradient-to-r from-accent to-info bg-clip-text text-transparent'>Trust Line設定</span>
+            <CardTitle size='sm' className='mb-4'>
+              🤝 Trust Line設定
             </CardTitle>
             <div className='space-y-6'>
               <div className='form-control'>
                 <label htmlFor='trustCurrency' className='label'>
-                  <span className='label-text font-medium flex items-center gap-2'>💰 通貨コード</span>
+                  <span className='label-text'>💰 通貨コード</span>
                 </label>
                 <input
                   id='trustCurrency'
                   type='text'
-                  className='input input-bordered w-full focus:border-accent transition-colors'
+                  className='input input-bordered'
                   value={trustSetForm.currency}
-                  onChange={(e) => setTrustSetForm({ ...trustSetForm, currency: e.target.value.toUpperCase() })}
+                  onChange={(e) => handleTrustSetFormChange({ currency: e.target.value.toUpperCase() })}
                   placeholder='USD, EUR, JPY など'
                   maxLength={3}
                 />
@@ -714,63 +726,35 @@ export function XrplDex({ defaultTab = 'swap', initialValues, onTabChange, onSta
 
               <div className='form-control'>
                 <label htmlFor='trustIssuer' className='label'>
-                  <span className='label-text font-medium flex items-center gap-2'>🏛️ Issuerアドレス</span>
+                  <span className='label-text'>🏛️ Issuerアドレス</span>
                 </label>
                 <input
                   id='trustIssuer'
                   type='text'
-                  className='input input-bordered w-full focus:border-accent transition-colors'
+                  className='input input-bordered'
                   value={trustSetForm.issuer}
-                  onChange={(e) => setTrustSetForm({ ...trustSetForm, issuer: e.target.value })}
+                  onChange={(e) => handleTrustSetFormChange({ issuer: e.target.value })}
                   placeholder='r...'
                 />
               </div>
 
               <div className='form-control'>
                 <label htmlFor='trustLimit' className='label'>
-                  <span className='label-text font-medium flex items-center gap-2'>📊 信頼限度額</span>
+                  <span className='label-text'>📊 信頼限度額</span>
                 </label>
                 <input
                   id='trustLimit'
                   type='number'
-                  className='input input-bordered w-full focus:border-accent transition-colors'
+                  className='input input-bordered'
                   value={trustSetForm.limit}
-                  onChange={(e) => setTrustSetForm({ ...trustSetForm, limit: e.target.value })}
+                  onChange={(e) => handleTrustSetFormChange({ limit: e.target.value })}
                   placeholder='1000000'
                 />
               </div>
 
               <button
-                className='btn btn-accent btn-lg w-full shadow-lg hover:shadow-xl transition-all duration-200'
-                onClick={async () => {
-                  if (!xumm || !user?.account) return
-
-                  const payload = await xumm.payload?.create({
-                    TransactionType: 'TrustSet',
-                    Account: user.account,
-                    LimitAmount: {
-                      currency: trustSetForm.currency,
-                      issuer: trustSetForm.issuer,
-                      value: trustSetForm.limit,
-                    },
-                    Memos: [
-                      {
-                        Memo: {
-                          MemoType: convertStringToHex('TRUST_SET'),
-                          MemoData: convertStringToHex(`${trustSetForm.currency}:${trustSetForm.issuer}`),
-                        },
-                      },
-                    ],
-                  })
-
-                  if (payload?.next.always) {
-                    if (xumm.xapp) {
-                      await xumm.xapp.openSignRequest(payload)
-                    } else {
-                      window.open(payload.next.always, '_blank')
-                    }
-                  }
-                }}
+                className='btn btn-accent btn-lg w-full'
+                onClick={executeTrustSet}
                 disabled={!trustSetForm.currency || !trustSetForm.issuer || !trustSetForm.limit}
               >
                 🚀 Trust Lineを設定
