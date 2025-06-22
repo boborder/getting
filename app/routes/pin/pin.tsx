@@ -1,7 +1,7 @@
 import { parseFormData } from '@mjackson/form-data-parser'
+import { PinataSDK } from 'pinata-web3'
 import { Form, useFetcher, useNavigation } from 'react-router'
 import type { Route } from './+types/pin'
-import { PinataSDK } from 'pinata-web3'
 
 export const loader = async ({ context }: Route.LoaderArgs) => {
   // 本番環境のみ ローカルではエラーになる
@@ -11,6 +11,7 @@ export const loader = async ({ context }: Route.LoaderArgs) => {
     })
     const files = await pinata.usage.pinnedFileCount()
     const storage = await pinata.usage.totalStorageSize()
+    if (files === 0) return { files: 0, storage: 0 }
     return { files, storage }
   }
   return { files: 0, storage: 0 }

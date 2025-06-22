@@ -1,14 +1,12 @@
 import { Hono } from 'hono'
-import { handle } from 'hono/service-worker'
-
 import { etag } from 'hono/etag'
 import { languageDetector } from 'hono/language'
 // import { logger } from 'hono/logger'
 import { poweredBy } from 'hono/powered-by'
 import { requestId } from 'hono/request-id'
+import { handle } from 'hono/service-worker'
 import { timing } from 'hono/timing'
-import type { ECDSA } from 'xrpl'
-import { Wallet } from 'xrpl'
+import { vanitySearch } from './app/utils'
 
 /// <reference lib="webworker" />
 
@@ -43,39 +41,12 @@ const sw = app
     if (!keyword) {
       return c.json({ error: 'keyword is required' }, 400)
     }
-    const result = await vanitySearch(keyword)
+    const result = await vanitySearch(keyword, 2)
     if (result.length > 0) {
       return c.json({ result })
     }
     return c.json({ error: 'No result found' }, 404)
   })
-
-export const vanitySearch = async (key: string, max?: number) => {
-  // キーワードをスペースとカンマで区切り配列にする
-  const keyword: string[] = key.split(/[\s,]+/).map((k: string) => k.trim())
-  console.log(keyword)
-  //レスポンスの配列
-  const matchedAddresses: {
-    address: string
-    secret?: string
-  }[] = []
-  const maxMatches = max || 1 //検索する最大数
-  // 先頭のrを含む正規表現を作成
-  const re = '^(r)(' + keyword.join('|') + ')(.+)$' // キーワードの配列を使って一つの正規表現を作成
-  const regexp = new RegExp(re, 'i')
-
-  while (matchedAddresses.length < maxMatches) {
-    const account = Wallet.generate('ed25519' as ECDSA)
-    const match = regexp.exec(account.address)
-    if (match) {
-      matchedAddresses.push({
-        address: account.address,
-        secret: account.seed,
-      })
-    }
-  }
-  return matchedAddresses
-}
 
 self.addEventListener('fetch', handle(sw) as EventListener)
 

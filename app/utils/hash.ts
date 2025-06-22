@@ -1,8 +1,9 @@
 import { ripemd160 } from '@noble/hashes/ripemd160'
 import { type ECDSA, Wallet } from 'xrpl'
 
-export const sha = async (text: string) => {
-  const encodeText = new TextEncoder().encode(text)
+export const sha = async (text: string, salt?: string) => {
+  const input = salt ? `${text}${salt}` : text
+  const encodeText = new TextEncoder().encode(input)
   const shaBuffer = await crypto.subtle.digest('SHA-256', encodeText)
   const uint8Array = new Uint8Array(shaBuffer)
   const shaHex = Array.from(uint8Array)
@@ -12,8 +13,9 @@ export const sha = async (text: string) => {
   return shaHex
 }
 
-export const rip = (text: string) => {
-  const encodeText = new TextEncoder().encode(text)
+export const rip = (text: string, salt?: string) => {
+  const input = salt ? `${text}${salt}` : text
+  const encodeText = new TextEncoder().encode(input)
   const ripBuffer = ripemd160(encodeText)
   const uint8Array = new Uint8Array(ripBuffer)
   const ripHex = Array.from(uint8Array)
@@ -22,8 +24,8 @@ export const rip = (text: string) => {
   return ripHex
 }
 
-export const hash = async (text: string) => {
-  return rip(await sha(text))
+export const hash = async (text: string, salt?: string) => {
+  return rip(await sha(text, salt), salt)
 }
 
 export const ed = async () => {

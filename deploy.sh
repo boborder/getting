@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+npm=npm
+npx=npx
+
+if command -v bun &> /dev/null; then
+    npm=bun
+    npx=bunx
+fi
+
 # .dev.vars ファイルが存在しない場合はエラーを返す
 if [[ ! -f .dev.vars ]]; then
     echo "File .dev.vars not found!"
@@ -14,9 +22,9 @@ do
     value=$(echo $value | sed -e 's/^"//' -e 's/"$//')
     echo "Setting $name" #$value
     # wrangler secret put コマンドを実行する
-    echo $value | npx wrangler secret put "$name"
+    echo $value | $npx wrangler secret put "$name"
 done < .dev.vars
 
-npx wrangler secret list
+$npx wrangler secret list
 
-npm run deploy
+$npm run deploy

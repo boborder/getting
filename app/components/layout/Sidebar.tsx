@@ -32,7 +32,7 @@ export const Sidebar = () => {
       <aside className='drawer-side z-10'>
         <label htmlFor='side-drawer' aria-label='close sidebar' className='drawer-overlay' />
 
-        <ul className='menu overflow-auto bg-neutral p-2 w-50 h-full text-accent'>
+        <ul className='menu text-accent bg-neutral p-2 w-50 h-100% overflow-auto'>
           <Search />
           <div className='divider' />
 
@@ -129,6 +129,15 @@ export const Sidebar = () => {
             </NavLink>
           </li>
 
+          <li>
+            <NavLink to='/pin' className='current-page'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='currentColor'>
+                <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z' />
+              </svg>
+              PIN
+            </NavLink>
+          </li>
+
           <div className='divider' />
 
           <li>
@@ -195,7 +204,7 @@ export const Sidebar = () => {
           </li>
 
           <li>
-            <NavLink to='https://youtu.be/dQw4w9WgXcQ' target='_blank' rel='noopener noreferrer'>
+            <NavLink to='https://www.youtube.com/watch?v=3ShoGS0jy14' target='_blank' rel='noopener noreferrer'>
               <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='currentColor'>
                 <path d='M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z'></path>
               </svg>
@@ -204,7 +213,7 @@ export const Sidebar = () => {
           </li>
 
           <li>
-            <a href='https://x.com/' target='_blank' rel='noopener noreferrer'>
+            <a href='https://x.com/dayjobdoor' target='_blank' rel='noopener noreferrer'>
               <svg
                 width='32'
                 height='32'
@@ -219,7 +228,7 @@ export const Sidebar = () => {
           </li>
 
           <li>
-            <a href='https://github.com/' target='_blank' rel='noopener noreferrer'>
+            <a href='https://github.com/boborder/getting' target='_blank' rel='noopener noreferrer'>
               <svg
                 width='32'
                 height='32'

@@ -1,5 +1,4 @@
 import type { DrizzleD1Database } from 'drizzle-orm/d1'
-import type { describe } from 'node:test'
 import type { PinataSDK } from 'pinata-web3'
 
 declare global {

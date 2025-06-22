@@ -8,8 +8,8 @@ import { logger } from 'hono/logger'
 import { poweredBy } from 'hono/powered-by'
 import { prettyJSON } from 'hono/pretty-json'
 import { requestId } from 'hono/request-id'
-import { endTime, setMetric, startTime, timing } from 'hono/timing'
 import { secureHeaders } from 'hono/secure-headers'
+import { endTime, setMetric, startTime, timing } from 'hono/timing'
 
 const cookie = createMiddleware<HonoEnv>(async (c, next) => {
   const uuid = getCookie(c, 'uuid') || crypto.randomUUID()
@@ -61,7 +61,7 @@ const middleware = new Hono<HonoEnv>().use(
     supportedLanguages: ['ja', 'en'],
     fallbackLanguage: 'ja',
   }),
-  // secureHeaders(),
+  secureHeaders(),
 )
 
 export default middleware

@@ -216,11 +216,9 @@ export const Xaman = () => {
         ) : null}
       </p>
       {user ? (
-        <>
-          <button onMouseDown={async () => await xumm?.logout()} type='button'>
-            Logout
-          </button>
-        </>
+        <button onMouseDown={async () => await xumm?.logout()} type='button'>
+          Logout
+        </button>
       ) : (
         <img
           src='/assets/sign-in-with-xumm.png'
@@ -346,73 +344,65 @@ export const Payload = () => {
 
           {tx && <Collapse title={tx.response.resolved_at || undefined} content={txData || tx.response} />}
         </>
-      ) : (
-        <>
-          {user ? (
-            <div className='space-y-4'>
-              {/* トランザクションタイプ選択 */}
-              <div className='card bg-base-200 shadow-lg'>
-                <div className='card-body p-4'>
-                  <h3 className='card-title text-lg'>🚀 トランザクションタイプ選択</h3>
+      ) : user ? (
+        <div className='space-y-4'>
+          {/* トランザクションタイプ選択 */}
+          <div className='card bg-base-200 shadow-lg'>
+            <div className='card-body p-4'>
+              <h3 className='card-title text-lg'>🚀 トランザクションタイプ選択</h3>
 
-                  {Object.entries(groupedTemplates).map(([category, templates]) => (
-                    <div key={category} className='space-y-2'>
-                      <h4 className='font-semibold text-sm opacity-80'>
-                        {categoryLabels[category as keyof typeof categoryLabels]}
-                      </h4>
-                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
-                        {templates.map((template) => (
-                          <label key={template.type} className='cursor-pointer'>
-                            <input
-                              type='radio'
-                              name='txType'
-                              value={template.type}
-                              checked={selectedTxType === template.type}
-                              onChange={(e) => setSelectedTxType(e.target.value)}
-                              className='radio radio-primary radio-sm mr-2'
-                            />
-                            <span className='text-sm'>
-                              {template.icon} {template.name}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* 選択されたトランザクションの詳細 */}
-              {selectedTemplate && (
-                <div className='card bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20'>
-                  <div className='card-body p-4'>
-                    <h3 className='card-title text-lg'>
-                      {selectedTemplate.icon} {selectedTemplate.name}
-                    </h3>
-                    <p className='text-sm opacity-80 mb-4'>{selectedTemplate.description}</p>
-
-                    {/* ペイロード詳細表示 */}
-                    <div className='bg-base-100 p-3 rounded-lg mb-4'>
-                      <h4 className='font-semibold text-sm mb-2'>📋 ペイロード内容</h4>
-                      <pre className='text-xs overflow-x-auto'>{JSON.stringify(selectedTemplate.payload, null, 2)}</pre>
-                    </div>
-
-                    {/* 実行ボタン */}
-                    <button
-                      type='button'
-                      onClick={createPayload}
-                      className='btn-primary btn-lg'
-                    >
-                      {selectedTemplate.icon} {selectedTemplate.name}を実行
-                    </button>
+              {Object.entries(groupedTemplates).map(([category, templates]) => (
+                <div key={category} className='space-y-2'>
+                  <h4 className='font-semibold text-sm opacity-80'>
+                    {categoryLabels[category as keyof typeof categoryLabels]}
+                  </h4>
+                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
+                    {templates.map((template) => (
+                      <label key={template.type} className='cursor-pointer'>
+                        <input
+                          type='radio'
+                          name='txType'
+                          value={template.type}
+                          checked={selectedTxType === template.type}
+                          onChange={(e) => setSelectedTxType(e.target.value)}
+                          className='radio radio-primary radio-sm mr-2'
+                        />
+                        <span className='text-sm'>
+                          {template.icon} {template.name}
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
-              )}
+              ))}
             </div>
-          ) : (
-            <Xaman />
+          </div>
+
+          {/* 選択されたトランザクションの詳細 */}
+          {selectedTemplate && (
+            <div className='card bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20'>
+              <div className='card-body p-4'>
+                <h3 className='card-title text-lg'>
+                  {selectedTemplate.icon} {selectedTemplate.name}
+                </h3>
+                <p className='text-sm opacity-80 mb-4'>{selectedTemplate.description}</p>
+
+                {/* ペイロード詳細表示 */}
+                <div className='bg-base-100 p-3 rounded-lg mb-4'>
+                  <h4 className='font-semibold text-sm mb-2'>📋 ペイロード内容</h4>
+                  <pre className='text-xs overflow-x-auto'>{JSON.stringify(selectedTemplate.payload, null, 2)}</pre>
+                </div>
+
+                {/* 実行ボタン */}
+                <button type='button' onClick={createPayload} className='btn-primary btn-lg'>
+                  {selectedTemplate.icon} {selectedTemplate.name}を実行
+                </button>
+              </div>
+            </div>
           )}
-        </>
+        </div>
+      ) : (
+        <Xaman />
       )}
     </>
   )

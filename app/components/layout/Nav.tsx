@@ -32,6 +32,9 @@ export const Nav = () => {
       <NavLink to='/test' className='btn btn-sm btn-outline current-page'>
         🧪 テスト
       </NavLink>
+      <NavLink to='/pin' className='btn btn-sm btn-outline current-page'>
+        💾 ピン
+      </NavLink>
     </nav>
   )
 }

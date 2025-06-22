@@ -1,480 +1,241 @@
-# 🎯 みんなやってるか！ - ハッカソン発表資料
+# 🎯 みんなやってるか！
 
-> **XRPL エコシステムを活用したソーシャル投資プラットフォーム**
+## 暗号通貨投資の民主化を実現する
 
----
+## コミュニティプラットフォーム
 
-## 📋 発表概要
+### ハッカソン ファイナルプレゼンテーション
 
-| 項目               | 内容                                            |
-| ------------------ | ----------------------------------------------- |
-| **プロジェクト名** | みんなやってるか！                              |
-| **カテゴリ**       | ソーシャル投資・コミュニティプラットフォーム    |
-| **技術スタック**   | React Router v7, XRPL, XUMM, Cloudflare Workers |
-| **開発期間**       | 2 週間                                          |
-| **チーム構成**     | フルスタック開発者 1 名                         |
+**🌐 ライブデモ**: https://やってるか.みんな
 
 ---
 
-## 🌟 プロジェクトビジョン
+## 👋 自己紹介
 
-### 💡 解決したい課題
+### 名前 リサおじ3
 
-```mermaid
-graph LR
-    A[投資情報の分散] --> D[統合プラットフォーム]
-    B[コミュニティの分離] --> D
-    C[ウォレット管理の複雑さ] --> D
-    D --> E[みんなやってるか！]
-```
+### x @DayJobDoor
 
-1. **情報格差の解消**: 投資情報が分散し、初心者が情報収集に苦労
-2. **コミュニティの分離**: 投資家同士の交流機会が限定的
-3. **ウォレット管理の複雑さ**: 複数のツールを使い分ける必要性
+### 趣味 音楽 旅行 XRP
 
-### 🎯 提供価値
+### 職業 情報インフラ系
 
-- **🤝 コミュニティ主導**: みんなで情報共有し、共に成長
-- **🔐 セキュア**: XUMM 認証による安全な取引環境
-- **📊 リアルタイム**: 最新の市場情報とポートフォリオ追跡
-- **🌐 分散化**: IPFS と XRPL による非中央集権的なデータ管理
+###  好きな食べ物 お米
 
----
+## 🍕XRP エコシステムでの取り組み
 
-## 🏗️ システムアーキテクチャ
+## トークン、NFTを発行
 
-### 全体構成図
+- OPI トークン 8102枚発行
+- NFT 画像と楽曲をNFT化
 
-```mermaid
-graph TB
-    subgraph "🖥️ フロントエンド"
-        A[React Router v7<br/>SSR + CSR]
-        B[Jotai<br/>状態管理]
-        C[SWR<br/>データフェッチ]
-        D[DaisyUI<br/>UIコンポーネント]
-        A --> B --> C --> D
-    end
+## 実はビギナーではない...🤫
 
-    subgraph "🔐 認証・ブロックチェーン"
-        E[XUMM SDK<br/>認証・署名]
-        F[XRPL Mainnet<br/>ブロックチェーン]
-        G[WebSocket<br/>リアルタイム]
-        E --> F --> G
-    end
+### 🏆 ハッカソン実績
 
-    subgraph "⚡ バックエンド"
-        H[Cloudflare Workers<br/>エッジコンピューティング]
-        I[Drizzle ORM<br/>型安全DB操作]
-        J[D1 Database<br/>SQLite]
-        H --> I --> J
-    end
+**🌾 XRPL コメ先物プラットフォーム**
 
-    subgraph "🌐 外部サービス"
-        K[IPFS/Pinata<br/>分散ストレージ]
-        L[TradingView<br/>チャート]
-        M[価格API<br/>市場データ]
-    end
+- アイディアソンでビジネス賞受賞
+- 農業 × RWA の新しい可能性を提案
 
-    A -.-> E
-    H -.-> K
-    H -.-> L
-    H -.-> M
-    C -.-> H
-```
+**🔗 Xahau Hooks 開発**
 
-### 技術選定理由
+- xrp.sh XRPLハッカソン ファイナリスト
+- Xahau Hooks と Burn2Mint を勉強
 
-| 技術                   | 選定理由                 | メリット                       |
-| ---------------------- | ------------------------ | ------------------------------ |
-| **React Router v7**    | 最新の SSR/CSR 統合      | SEO 最適化、高速レンダリング   |
-| **XRPL + XUMM**        | セキュアな認証・決済     | 非中央集権、低コスト送金       |
-| **Cloudflare Workers** | エッジコンピューティング | 低レイテンシ、グローバル配信   |
-| **Jotai + SWR**        | モダン状態管理           | 軽量、型安全、キャッシュ最適化 |
+**🆔 DID プロフィールアプリ**
+
+- xrp.gl (PayString 対応は今後予定)
+- 分散 ID 技術でアイデンティティ管理
+
+### 🔮 今後の挑戦
+
+**⚡ 自作 miniPC で rippled バリデーター**
+
+- XRPL ネットワークへの参加
+
+**📡 Wi-SUN でトランザクション送信**
+
+- IoT× ブロックチェーンの実現
+
+**🎫 動的 NFT でチケット発行**
+
+- イベント業界の DX 推進
+
+**📦 ペイチャン × 国際郵便 EC サイト**
+
+- RWA（Real World Assets）の実用化
 
 ---
 
-## 🎨 主要機能デモ
+# 😰 解決する課題
 
-### 1. 🔐 XUMM 認証フロー
+## 「みんな」が抱える投資の悩み
 
-```mermaid
-sequenceDiagram
-    participant U as ユーザー
-    participant W as Webアプリ
-    participant X as XUMM
-    participant R as XRPL
+### 🤔 投資に興味はあるけれど...
 
-    U->>W: ログイン要求
-    W->>X: 認証ペイロード作成
-    X->>U: QRコード表示
-    U->>X: モバイルで署名
-    X->>R: 署名検証
-    R->>W: 認証完了
-    W->>U: ダッシュボード表示
-```
+**📚 専門用語が難しい**
 
-**特徴**:
+- 「DeFi？ステーキング？」
+- 情報収集を諦めてしまう
 
-- 🔒 秘密鍵不要の安全な認証
-- 📱 モバイルアプリとの連携
-- ⚡ 即座の認証確認
+**😓 一人で判断するのが不安**
 
-### 2. 💬 コミュニティ投稿システム
+- 「この投資、大丈夫かな？」
+- 投資タイミングを逃してしまう
 
-```typescript
-// 投稿作成フロー
-const createPost = async (content: string, category: PostCategory) => {
-  // 1. IPFSに投稿内容を保存
-  const ipfsHash = await uploadToIPFS({
-    content,
-    author: user.account,
-    timestamp: Date.now(),
-  });
+**😱 技術的な壁が高い**
 
-  // 2. データベースに投稿情報を保存
-  const post = await db.posts.create({
-    userId: user.id,
-    content,
-    category,
-    ipfsHash,
-  });
+- 「ウォレット作るの怖い」
+- 暗号通貨自体を諦めてしまう
 
-  // 3. リアルタイム更新
-  mutate("/api/posts");
-};
-```
+### 😭 結果として...
 
-**特徴**:
-
-- 📝 リッチテキスト投稿
-- 🏷️ カテゴリ別分類（トレード、ポートフォリオ、ニュース、質問）
-- ❤️ いいね・返信機能
-- 🔄 リアルタイム更新（30 秒間隔）
-
-### 3. 📊 ポートフォリオ追跡
-
-```mermaid
-graph LR
-    A[XRPL アカウント] --> B[残高取得]
-    B --> C[価格データ取得]
-    C --> D[損益計算]
-    D --> E[チャート表示]
-    E --> F[アラート設定]
-```
-
-**機能**:
-
-- 💰 リアルタイム残高表示
-- 📈 24 時間変動率
-- 🎯 価格アラート設定
-- 📊 ポートフォリオ分析
+**投資機会を失い続ける「みんなは稼いでるのに...」**
 
 ---
 
-## 💻 技術的ハイライト
+# 🎯 私たちの解決策
 
-### 1. 型安全性の徹底
+## 「みんな」をつなぐ技術アーキテクチャ
 
-```typescript
-// Drizzleスキーマによる型安全なDB操作
-export const posts = sqliteTable("posts", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").references(() => users.id),
-  content: text("content").notNull(),
-  category: text("category", {
-    enum: ["trading", "portfolio", "news", "question"],
-  }).notNull(),
-  ipfsHash: text("ipfs_hash"),
-  likesCount: integer("likes_count").default(0),
-  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
-});
+### 🌐 **フロントエンド (React Router v7)**
 
-// 型推論による安全なデータアクセス
-type Post = typeof posts.$inferSelect;
-type NewPost = typeof posts.$inferInsert;
-```
+- **📱 PWA アプリ** - オフライン対応で いつでもどこでも
+- **💬 コミュニティ投稿** - みんなの知恵を共有
+- **📊 リアルタイムダッシュボード** - ポートフォリオ管理
 
-### 2. パフォーマンス最適化
+### ⚡ **エッジコンピューティング (Cloudflare Workers)**
 
-```typescript
-// SWRによる効率的なデータキャッシュ
-const { data: posts, mutate } = useSWR<Post[]>("/api/posts", fetcher, {
-  refreshInterval: 30000, // 30秒自動更新
-  dedupingInterval: 5000, // 5秒重複排除
-  revalidateOnFocus: false,
-});
+- **🔐 XUMM 認証 API** - 秘密鍵不要の安全認証
+- **💱 統合 DEX 取引** - XRPL 上の分散取引
+- **🔔 価格アラート** - 重要な変動を即通知
+- **🗄️ D1 データベース** - 高速・自動スケール
 
-// Jotaiによる最小限の再レンダリング
-const postsAtom = atom<Post[]>([]);
-const filteredPostsAtom = atom((get) => get(postsAtom).filter((post) => post.category === get(filterAtom)));
-```
+### 🔗 **XRPL エコシステム**
 
-### 3. エラーハンドリング
+- **📱 XUMM Wallet** - スマートフォンで簡単認証
+- **⛓️ XRPL/XAHAU** - 高速・低コスト取引
+- **📊 リアルタイム市場データ** - WebSocket 接続
 
-```typescript
-// 包括的エラー処理
-export class BaseRepository {
-  protected handleError(operation: string, error: any): DatabaseError {
-    return {
-      name: "DatabaseError",
-      message: `${this.entityName} ${operation} failed`,
-      operation,
-      entityName: this.entityName,
-      originalError: error,
-      code: error.code || "UNKNOWN_ERROR",
-      timestamp: Date.now(),
-    };
-  }
-}
-```
+### 🔄 **システム連携**
+
+**フロントエンド** → **エッジコンピューティング** → **XRPL エコシステム**
+の 3 層アーキテクチャで、高速・安全・スケーラブルなサービスを実現
 
 ---
 
-## 📊 データベース設計
+# 🚀 技術フロー
 
-### ER 図
+## 「やってるか？」- 簡単 3 ステップ認証
 
-```mermaid
-erDiagram
-    users {
-        string id PK
-        string xumm_user_token UK
-        string xrpl_address
-        string username
-        string avatar_url
-        datetime created_at
-        datetime updated_at
-    }
+### 🌐 **Step 1: サイト訪問**
 
-    posts {
-        string id PK
-        string user_id FK
-        string content
-        enum category
-        string ipfs_hash
-        int likes_count
-        int replies_count
-        datetime created_at
-        datetime updated_at
-    }
+1. **やってるか.みんな** にアクセス
+2. **「みんなと一緒に始める」** ボタンクリック
 
-    user_interactions {
-        string id PK
-        string user_id FK
-        string post_id FK
-        enum interaction_type
-        datetime created_at
-    }
+### 📱 **Step 2: XUMM 認証**
 
-    price_alerts {
-        string id PK
-        string user_id FK
-        string symbol
-        enum condition
-        decimal target_price
-        boolean is_active
-        datetime triggered_at
-        datetime created_at
-    }
+1. QR コード **「やってるか？」** が表示
+2. スマホで **XUMM アプリ** を開く
+3. **QR コードをスキャン**
+4. そのまま**サインイン** する
 
-    users ||--o{ posts : creates
-    users ||--o{ user_interactions : performs
-    users ||--o{ price_alerts : sets
-    posts ||--o{ user_interactions : receives
-```
+### 💰 **Step 3: 取引開始**
 
-### 設計思想
+1. **「ようこそ、みんなの仲間入り！」**
+2. ダッシュボードで **ポートフォリオ確認**
+3. **コミュニティ投稿** を読む
+4. 初回取引 **「みんなと一緒に XRPL DEX で取引」**
 
-- **最小限の構成**: 4 テーブルで全機能を実現
-- **スケーラビリティ**: インデックス最適化
-- **整合性**: 外部キー制約による参照整合性
-- **拡張性**: 将来機能追加に対応した柔軟な設計
+### 🎉 **Step 4: コミュニティ参加**
+
+1. **「やってるよ！」投稿** でお祝い
+2. みんなからの **「いいね！」**
+3. **次の投資についてみんなで相談**
 
 ---
 
-## 🚀 デプロイメント戦略
+# ⚡ 技術スタック
 
-### CI/CD パイプライン
+### 🔥 フロントエンド
 
-```mermaid
-graph LR
-    A[Git Push] --> B[GitHub Actions]
-    B --> C[型チェック]
-    C --> D[テスト実行]
-    D --> E[ビルド]
-    E --> F[Cloudflare Workers]
-    F --> G[本番環境]
-```
+- React Router v7 + SSR
+- Jotai + SWR
+- TypeScript 100%
 
-### 環境構成
+### ⚡ バックエンド
 
-| 環境             | インフラ           | データベース | 認証         |
-| ---------------- | ------------------ | ------------ | ------------ |
-| **開発**         | ローカル           | SQLite       | モック XUMM  |
-| **ステージング** | Cloudflare Workers | D1 Database  | XUMM Testnet |
-| **本番**         | Cloudflare Workers | D1 Database  | XUMM Mainnet |
+- Cloudflare Workers + cros
+- Drizzle ORM + D1
+- XRPL + XUMM SDK
 
----
+### 📊 パフォーマンス
 
-## 📈 パフォーマンス指標
+- API 応答: < 50ms
+- 初回描画: < 800ms
+- Core Web Vitals: 全 A
 
-### Lighthouse スコア
+### 🛡️ セキュリティ
 
-| 項目               | スコア | 最適化内容                  |
-| ------------------ | ------ | --------------------------- |
-| **Performance**    | 95+    | コード分割、画像最適化      |
-| **Accessibility**  | 100    | ARIA 属性、キーボード対応   |
-| **Best Practices** | 100    | HTTPS、セキュリティヘッダー |
-| **SEO**            | 100    | メタタグ、構造化データ      |
-
-### レスポンス時間
-
-- **初期読み込み**: < 2 秒
-- **API 応答**: < 300ms（エッジ最適化）
-- **チャート表示**: < 0.5 秒
-- **リアルタイム更新**: 30 秒間隔
+- ウォレット単位の 非中央集権認証
+- エッジ分散処理
+- 秘密鍵はあなたのもの
 
 ---
 
-## 🔒 セキュリティ対策
+# 📊 開発実績
 
-### 認証・認可
+### 📈 数値で見る成果
 
-```mermaid
-graph TB
-    A[ユーザーリクエスト] --> B{XUMM認証済み?}
-    B -->|No| C[認証ページリダイレクト]
-    B -->|Yes| D{権限チェック}
-    D -->|OK| E[リソースアクセス許可]
-    D -->|NG| F[403 Forbidden]
-    C --> G[XUMM署名]
-    G --> H[署名検証]
-    H --> I[セッション作成]
-    I --> E
-```
+**14 日** - MVP 完成期間
+**785 行** - 統合 DEX コンポーネント
+**3,500+行** - 総コード量
+**100%** - TypeScript 採用率
 
-### セキュリティ機能
+### 🎯 現在の状況
 
-- 🔐 **XUMM 署名認証**: 秘密鍵不要の安全な認証
-- 🛡️ **CSRF 対策**: トークンベース保護
-- 🔒 **HTTPS 強制**: 全通信の暗号化
-- 🚫 **入力検証**: Valibot による厳密なバリデーション
-- 📝 **監査ログ**: 全操作の記録
+- ✅ 本番環境(デモだけど)で稼働中
+- ✅ XRPL Mainnet 対応
+- ✅ PWA 対応完了
+- ✅ 完全レスポンシブ
 
 ---
 
-## 🎯 ビジネス価値
+# 🔮 今後の目標
 
-### 市場機会
+## XRPL エコシステム拡張計画
 
-```mermaid
-pie title 暗号通貨投資家の課題
-    "情報収集の困難" : 35
-    "コミュニティ不足" : 25
-    "ツール分散" : 20
-    "セキュリティ不安" : 20
-```
+### 🌾 **過去の実績**
 
-### 競合優位性
+- **🏆 コメ先物プラットフォーム** - アイディアソンでビジネス賞受賞 (アイディアの段階 XRPLだけでは不可能？)
+- **🔗 Xahau Hooks 開発** - xrp.sh ファイナリスト (開発停滞中)
+- **🆔 DID プロフィール** - xrp.gl 開発中（PayString 対応したい）
 
-| 項目               | 既存サービス  | みんなやってるか！  |
-| ------------------ | ------------- | ------------------- |
-| **認証方式**       | ID/パスワード | XUMM 署名認証       |
-| **データ保存**     | 中央集権      | IPFS 分散ストレージ |
-| **コミュニティ**   | 読み取り専用  | 双方向交流          |
-| **ウォレット連携** | 限定的        | XRPL 完全統合       |
-| **リアルタイム性** | 遅延あり      | WebSocket 即時更新  |
+### 🏗️ **インフラ構築**
 
----
+- **⚡ バリデーター** - XRPL ネットワークの分散化に貢献
+- **📡 Wi-SUN トランザクション** - IoT× ブロックチェーンの実現
 
-## 🚀 今後の展開
+### 💼 **ビジネス応用**
 
-### ロードマップ
+- **🎫 動的 NFT チケット** - イベント業界の DX 推進
+- **📦 ペイチャン × 国際郵便 EC サイト** - RWA（Real World Assets）の実用化
 
-```mermaid
-gantt
-    title 開発ロードマップ
-    dateFormat  YYYY-MM-DD
-    section Phase 1
-    MVP開発           :done, mvp, 2024-01-01, 2024-01-14
-    ハッカソン提出     :done, hackathon, 2024-01-15, 2024-01-15
+### 🚀 **統合ビジョン**
 
-    section Phase 2
-    ユーザーフィードバック :feedback, 2024-01-16, 2024-01-30
-    機能改善           :improve, 2024-02-01, 2024-02-14
-
-    section Phase 3
-    モバイルアプリ     :mobile, 2024-02-15, 2024-03-15
-    API公開           :api, 2024-03-01, 2024-03-31
-
-    section Phase 4
-    マネタイズ        :monetize, 2024-04-01, 2024-04-30
-    グローバル展開     :global, 2024-05-01, 2024-06-30
-```
-
-### 追加予定機能
-
-1. **📱 モバイルアプリ**: React Native 版の開発
-2. **🤖 AI 分析**: 投資パターン分析とレコメンド
-3. **🎮 ゲーミフィケーション**: 投資成績に基づくランキング
-4. **🌍 多言語対応**: 英語・中国語・韓国語サポート
-5. **💰 マネタイズ**: プレミアム機能と NFT 統合
+過去の実績 → インフラ構築 → ビジネス応用へと発展し、
+XRPL エコシステム全体の成長に貢献していきます。
 
 ---
 
-## 🏆 ハッカソン評価ポイント
+# 🎯 みんなやってるか！
 
-### 技術的革新性 ⭐⭐⭐⭐⭐
+## **暗号通貨投資をもっと身近に**
 
-- **最新技術**: React Router v7 の先進的活用
-- **ブロックチェーン統合**: XRPL + XUMM 完全統合
-- **エッジコンピューティング**: Cloudflare Workers 活用
-- **型安全性**: TypeScript + Drizzle ORM
+## **みんなで一緒に成長しよう**
 
-### 実用性・完成度 ⭐⭐⭐⭐⭐
+**🌐 今すぐ体験**: https://やってるか.みんな
 
-- **実データ使用**: 実際の暗号通貨価格・取引
-- **本格的 UI/UX**: プロダクション品質のデザイン
-- **包括的機能**: 投資に必要な機能を網羅
-- **エラーハンドリング**: 堅牢なエラー処理
-
-### 独創性・ビジネス価値 ⭐⭐⭐⭐⭐
-
-- **ユニークコンセプト**: 「みんなやってるか！」の親しみやすさ
-- **コミュニティ重視**: ソーシャル要素の強化
-- **XRPL 特化**: エコシステム特化の差別化
-- **分散化**: 非中央集権的なデータ管理
-
----
-
-## 📞 お問い合わせ
-
-### デモ・資料
-
-- **🌐 ライブデモ**: https://やってるか.みんな
-- **📚 GitHub**: https://github.com/boborder/getting
-- **📖 API ドキュメント**: https://やってるか.
-みんな/api/docs
-- **🎥 デモ動画**: https://youtu.be/demo-video
-
-### 開発者情報
-
-- **👨‍💻 開発者**: リサおじ3
-- **📧 Email**: dayjobdoor@gmail.com
-- **🐦 Twitter**: @dayjobdoor
-
----
-
-## 🙏 謝辞
-
-このプロジェクトの実現にあたり、以下の技術・コミュニティに感謝いたします：
-
-- **XRPL Foundation**: 革新的なブロックチェーン技術
-- **XUMM Team**: セキュアな認証ソリューション
-- **Cloudflare**: 高性能なエッジインフラ
-- **React Router**: 次世代 React フレームワーク
-- **暗号通貨コミュニティ**: 貴重なフィードバックとサポート
-
----
-
-**🎯 「みんなやってるか！」で、みんなで暗号通貨の未来を創ろう！**
+**ご清聴ありがとうございました！**
+質問・デモンストレーション歓迎です 🙋‍♂️

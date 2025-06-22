@@ -1,10 +1,9 @@
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { useEffect, useRef, useState } from 'react'
+import { atom, useAtom, useSetAtom } from 'jotai'
+import { useEffect, useRef } from 'react'
 import { useFetcher, useLoaderData } from 'react-router'
 import { ClientOnly } from 'remix-utils/client-only'
 import type { loader } from '~/routes/login/login'
-
-import { atom, useAtom, useSetAtom } from 'jotai'
 
 const veriTokenAtom = atom(false)
 export const useVeriToken = () => {

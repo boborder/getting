@@ -1,5 +1,5 @@
-import type { Route } from './+types/pinata'
 import { PinataSDK } from 'pinata-web3'
+import type { Route } from './+types/pinata'
 
 export async function action({ request, context }: Route.ActionArgs) {
   const data = (await request.json()) as any

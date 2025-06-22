@@ -23,28 +23,28 @@ export default function Chart() {
           to='/chart/BTCUSDT'
           className={`btn btn-sm btn-outline ${symbol === 'BTCUSDT' ? 'bg-primary/30' : ''}`}
         >
-          BTC
+          BTC/USDT
         </NavLink>
         <NavLink
           to='/chart/ETHUSDT'
           className={`btn btn-sm btn-outline ${symbol === 'ETHUSDT' ? 'bg-primary/30' : ''}`}
         >
-          ETH
+          ETH/USDT
         </NavLink>
         <NavLink to='/chart/XAHUSD' className={`btn btn-sm btn-outline ${symbol === 'XAHUSD' ? 'bg-primary/30' : ''}`}>
-          XAH
+          XAH/USD
         </NavLink>
         <NavLink
           to='/chart/FLRUSDT'
           className={`btn btn-sm btn-outline ${symbol === 'FLRUSDT' ? 'bg-primary/30' : ''}`}
         >
-          FLR
+          FLR/USDT
         </NavLink>
         <NavLink
           to='/chart/XDCUSDT'
           className={`btn btn-sm btn-outline ${symbol === 'XDCUSDT' ? 'bg-primary/30' : ''}`}
         >
-          XDC
+          XDC/USDT
         </NavLink>
       </nav>
       <TradingView />

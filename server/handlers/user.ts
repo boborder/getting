@@ -13,7 +13,7 @@ export const getUserHandler = async (
     }
   >,
 ) => {
-  const { name, email } = c.req.valid('query')
+  const { name, email } = c.req.valid('query' as any)
 
   if (name && email) {
     return c.json({ message: `Hello, ${name}! Your email is ${email}.` })

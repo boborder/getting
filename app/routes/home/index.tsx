@@ -1,9 +1,9 @@
 import { useForm } from '@conform-to/react'
 import { parseWithValibot } from 'conform-to-valibot'
+import { hc } from 'hono/client'
 import { Suspense } from 'react'
-import { Await, Form, data, useActionData, useLoaderData, useRevalidator } from 'react-router'
+import { Await, data, Form, useActionData, useLoaderData, useRevalidator } from 'react-router'
 import { Wallet } from 'xrpl'
-import type { Route } from './+types/index'
 
 // Components
 import { Alert } from '~/components/ui/Alert'
@@ -14,15 +14,14 @@ import { Loading } from '~/components/ui/Loading'
 import { Fetch, NETWORK_CONFIGS, Payload, useNetworkOptions } from '~/components/xrp'
 // Utils
 import { useStore } from '~/utils/useStore'
-import { AccountFormSchema, type XRPLAccountData, fetchXRPLAccountData, truncateAddress } from '~/utils/xrpl'
+import { AccountFormSchema, fetchXRPLAccountData, truncateAddress, type XRPLAccountData } from '~/utils/xrpl'
 import { useUser } from '~/utils/xumm'
+import type { AppType } from '../../../server'
+import type { Route } from './+types/index'
 import { AccountDisplay } from './AccountDisplay'
 
-import type { AppType } from '../../../server'
-import { hc } from 'hono/client'
-
 export function meta({ matches }: Route.MetaArgs) {
-  return [{ title: matches[0].pathname }, { name: 'description', content: 'みんな〜やってるか！' }]
+  return [{ title: 'みんな〜やってるか！' }, { name: 'description', content: matches[0].pathname }]
 }
 
 // 🚀 SSR Loader
@@ -48,11 +47,13 @@ export async function loader({ context }: Route.LoaderArgs) {
 export const clientLoader = async ({ serverLoader }: Route.ClientLoaderArgs) => {
   const serverData = await serverLoader()
   const client = hc<AppType>('/')
-  const rpc = client.api.user.$get({
-    query: {
-      name: 'bob',
-    },
-  }).then((res) => res.json())
+  const rpc = client.api.user
+    .$get({
+      query: {
+        name: 'bob',
+      },
+    })
+    .then((res) => res.json())
   return {
     ...serverData,
     wallet: Wallet.generate(),

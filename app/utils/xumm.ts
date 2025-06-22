@@ -25,6 +25,16 @@ export const getXummUser = async (xumm?: Xumm) => {
   }
 }
 
+  const getUser = (async (xumm: Xumm) => {
+    const user = xumm.user
+    const promisedUserArray = await Promise.all(
+      (Object.keys(user) as (keyof typeof user)[]).map(async (u) => {
+        return { [u]: await user[u] }
+      }),
+    )
+    return Object.assign({}, ...promisedUserArray) as Promise<XummUser>
+  })
+
 // ユーザー情報を取得する キャッシュを利用 setUser をuseEffect で更新
 export const useX = (API: string) => {
   // キーは API があるかどうか xumm
@@ -32,7 +42,7 @@ export const useX = (API: string) => {
   // キーは xumm へログインしたか アドレス
   const { data: user, mutate: setUser } = useSWR(
     xumm?.user?.account ? xumm?.user?.account : null,
-    async () => await getXummUser(xumm),
+    async () => await getUser(xumm!),
   )
   // info がキー info と nft を取得
   useSWR(user?.account ? 'dig' : null, async () => await dig(user?.account!, user?.networkEndpoint, 'info', 'nft'))

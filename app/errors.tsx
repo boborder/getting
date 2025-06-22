@@ -1,4 +1,4 @@
-import { Link, isRouteErrorResponse, useNavigate, useRouteError } from 'react-router'
+import { isRouteErrorResponse, Link, useNavigate, useRouteError } from 'react-router'
 import { Card, CardBody, CardTitle } from '~/components/ui/Card'
 import { Collapse } from '~/components/ui/Collapse'
 
@@ -37,11 +37,11 @@ export const Errors = () => {
         <CardBody className='p-6'>
           <div className='text-6xl my-3'>{emoji}</div>
 
-          <CardTitle size='lg' className='text-xl my-3'>
+          <CardTitle size='lg' className='my-3'>
             {title}
           </CardTitle>
 
-          <p className='text-base-content/70 my-3'>{message}</p>
+          <p className='my-3'>{message}</p>
 
           {stack ? (
             <div className='my-3 mx-auto'>
@@ -49,18 +49,17 @@ export const Errors = () => {
             </div>
           ) : null}
 
-          <div className='flex flex-col sm:flex-row gap-3 justify-center items-center'>
+          <div className='flex flex-col sm:flex-row gap-2 justify-center items-center'>
             <Link to='/' className='btn btn-primary'>
               🏠 ホームに戻る
             </Link>
 
-            <button onClick={() => navigate(-1)} className='btn btn-outline'>
+            <button onMouseDown={() => navigate(-1)} className='btn btn-outline'>
               ← 前のページに戻る
             </button>
-
           </div>
 
-          <div className='my-3 text-xs opacity-50'>問題が続く場合は、ブラウザのキャッシュをクリアしてください</div>
+          <div className='my-3 text-xs'>問題が続く場合は、ブラウザのキャッシュをクリアしてください</div>
         </CardBody>
       </Card>
     </div>

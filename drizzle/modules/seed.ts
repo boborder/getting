@@ -1,16 +1,15 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { createClient } from '@libsql/client'
+import { config } from 'dotenv'
 import { drizzle } from 'drizzle-orm/libsql'
 import {
   type AsyncBatchRemoteCallback,
   type AsyncRemoteCallback,
-  type SqliteRemoteDatabase,
   drizzle as drizzleSQLiteProxy,
+  type SqliteRemoteDatabase,
 } from 'drizzle-orm/sqlite-proxy'
 import { seed } from 'drizzle-seed'
-
-import fs from 'node:fs'
-import path from 'node:path'
-import { config } from 'dotenv'
 import * as schema from '../schema'
 
 type Any = any

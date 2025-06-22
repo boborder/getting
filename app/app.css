@@ -48,7 +48,7 @@
   --color-neutral: oklch(26.49% 0.0727 258.32);
   --color-neutral-content: oklch(98.44% 0.0045 258.32);
   --color-base-100: oklch(98.44% 0.0045 258.32);
-  --color-base-200: oklch(44.44% 0.2135 258.32);
+  --color-base-200: oklch(74.44% 0.2589 258.32);
   --color-info: oklch(76.15% 0.0235 271.97);
   --color-success: oklch(79.62% 0.1651 159.48);
   --color-warning: oklch(68.97% 0.1998 23.98);
@@ -75,31 +75,9 @@
   @apply stats stats-vertical lg:stats-horizontal;
 }
 
-/* モバイル対応ユーティリティ */
-@utility mobile-safe {
-  @apply w-full max-w-none min-w-0 overflow-hidden;
-}
-
-@utility mobile-text {
-  @apply text-xs sm:text-sm break-words;
-}
-
-@utility mobile-padding {
-  @apply px-2 sm:px-4 lg:px-6 py-2 sm:py-4;
-}
-
-@utility mobile-gap {
-  @apply gap-1 sm:gap-2 lg:gap-3;
-}
-
-@utility mobile-button {
-  @apply btn-xs sm:btn-sm lg:btn-md w-full sm:w-auto;
-}
-
 @layer base {
   body {
     font-family: "Roboto Mono", monospace, sans-serif;
-    @apply overflow-x-hidden;
   }
   a {
     @apply transition duration-[0.3s] hover:link;
@@ -137,7 +115,7 @@
     @apply btn btn-neutral text-sm sm:text-lg;
   }
   img {
-    @apply mx-auto object-cover hover:scale-105 active:scale-105 max-w-full h-auto;
+    @apply mx-auto h-auto max-w-full object-cover hover:scale-105 active:scale-105;
   }
   progress {
     @apply progress progress-primary w-full;

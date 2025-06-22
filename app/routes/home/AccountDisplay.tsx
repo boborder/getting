@@ -4,7 +4,7 @@ import { Collapse } from '~/components/ui/Collapse'
 import { StatItem, StatsContainer } from '~/components/ui/Stats'
 
 // Utils
-import { type XRPLAccountData, formatAccountStatus } from '~/utils/xrpl'
+import { formatAccountStatus, type XRPLAccountData } from '~/utils/xrpl'
 
 // 🎯 アカウント表示プロパティ
 interface AccountDisplayProps {

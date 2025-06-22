@@ -1,11 +1,10 @@
-import type { Route } from './+types/alerts'
-
 import { atom, useAtom } from 'jotai'
 import { atomWithStorage, useHydrateAtoms } from 'jotai/utils'
-import { Xaman } from '~/components/xrp'
 import { Alert } from '~/components/ui/Alert'
 import { StatItem, StatsContainer } from '~/components/ui/Stats'
+import { Xaman } from '~/components/xrp'
 import { useUser } from '~/utils/xumm'
+import type { Route } from './+types/alerts'
 
 // 価格アラートの型定義
 interface PriceAlert {

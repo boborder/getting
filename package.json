@@ -6,11 +6,13 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "typecheck": "npm run cf-typegen && react-router typegen && tsc -b",
-    "lint": "biome check --write",
-    "format": "biome format --write",
+    "lint": "biome check --write app server types",
+    "lint:all": "biome check --write",
+    "format": "biome format --write app server types",
+    "format:all": "biome format --write",
     "cf-typegen": "wrangler types",
-    "preview": "bun run build && vite preview",
-    "deploy": "bun run build && wrangler deploy",
+    "preview": "npm run build && vite preview",
+    "deploy": "npm run build && wrangler deploy",
     "db:create": "wrangler d1 execute getting --local --command='SELECT 1'",
     "db:create:prod": "wrangler d1 create getting",
     "db:generate": "drizzle-kit generate --name init_db",
@@ -25,7 +27,7 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
-    "@conform-to/react": "^1.7.0",
+    "@conform-to/react": "^1.7.2",
     "@hono/swagger-editor": "^1.0.1",
     "@hono/swagger-ui": "^0.5.2",
     "@hono/valibot-validator": "^0.5.2",
@@ -38,7 +40,7 @@
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
     "drizzle-valibot": "^0.4.2",
-    "hono": "^4.7.11",
+    "hono": "^4.8.2",
     "hono-openapi": "^0.4.8",
     "isbot": "^5.1.28",
     "jotai": "^2.12.5",
@@ -55,12 +57,12 @@
     "xumm": "^1.8.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@cloudflare/vite-plugin": "^1.6.0",
+    "@biomejs/biome": "^2.0.4",
+    "@cloudflare/vite-plugin": "^1.7.4",
     "@react-router/dev": "^7.6.2",
     "@tailwindcss/vite": "^4.1.10",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^20.19.0",
+    "@types/node": "^20.19.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@types/web": "^0.0.241",
@@ -73,6 +75,6 @@
     "vite": "^6.3.5",
     "vite-plugin-pwa": "^1.0.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "wrangler": "^4.20.0"
+    "wrangler": "^4.20.5"
   }
 }

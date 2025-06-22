@@ -3,8 +3,8 @@ import type { Route } from './+types/root'
 import './app.css'
 
 import { Errors } from './errors'
-import { JotaiProvider, SWRProvider } from './provider'
 import { Layout as Template } from './layout'
+import { JotaiProvider, SWRProvider } from './provider'
 
 export const links: Route.LinksFunction = () => [
   { rel: 'favicon', href: '/favicon.ico' },

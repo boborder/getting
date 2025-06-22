@@ -1,4 +1,4 @@
-import { type RouteConfig, index, layout, prefix, route } from '@react-router/dev/routes'
+import { index, layout, prefix, type RouteConfig, route } from '@react-router/dev/routes'
 
 export default [
   layout('routes/layout.tsx', [
@@ -15,7 +15,11 @@ export default [
     ...prefix('/portfolio', [route('*', 'routes/portfolio/portfolio.tsx')]),
     ...prefix('/dashboard', [route('*', 'routes/dashboard/dashboard.tsx')]),
     ...prefix('/alerts', [route('*', 'routes/alerts/alerts.tsx')]),
-    ...prefix('/pin', [index('routes/pin/pin.tsx'), route('pinata', 'routes/pin/pinata.ts'), route('r2', 'routes/pin/r2.ts')]),
+    ...prefix('/pin', [
+      index('routes/pin/pin.tsx'),
+      route('pinata', 'routes/pin/pinata.ts'),
+      route('r2', 'routes/pin/r2.ts'),
+    ]),
   ]),
   layout('routes/chart/chart.tsx', [
     ...prefix('/chart', [index('routes/chart/market.tsx'), route(':symbol', 'routes/chart/linechart.tsx')]),

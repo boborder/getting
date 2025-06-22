@@ -1,12 +1,12 @@
+import { swaggerUI } from '@hono/swagger-ui'
 import { Hono } from 'hono'
+import { basicAuth } from 'hono/basic-auth'
 import { createMiddleware } from 'hono/factory'
-
 import { describeRoute, openAPISpecs } from 'hono-openapi'
 import { resolver, validator as vValidator } from 'hono-openapi/valibot'
-
-import { swaggerUI } from '@hono/swagger-ui'
-import { basicAuth } from 'hono/basic-auth'
-
+// ハンドラーのインポート
+import { createUserHandler, getUserHandler } from './handlers/user'
+import { generateRandomWalletHandler, generateWalletHandler, validateWalletHandler } from './handlers/wallet'
 // スキーマのインポート
 import { bodySchema, errorResponseSchema, querySchema, responseSchema } from './schema/user'
 import {
@@ -15,10 +15,6 @@ import {
   validateWalletResponseSchema,
   walletResponseSchema,
 } from './schema/wallet'
-
-// ハンドラーのインポート
-import { createUserHandler, getUserHandler } from './handlers/user'
-import { generateRandomWalletHandler, generateWalletHandler, validateWalletHandler } from './handlers/wallet'
 
 const app = new Hono<HonoEnv>()
 

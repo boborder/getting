@@ -1,11 +1,10 @@
-import type { Route } from './+types/portfolio'
-
 import { atom, useAtom } from 'jotai'
 import { useHydrateAtoms } from 'jotai/utils'
-import { Xaman } from '~/components/xrp'
 import { Alert } from '~/components/ui/Alert'
 import { StatItem, StatsContainer } from '~/components/ui/Stats'
+import { Xaman } from '~/components/xrp'
 import { useUser } from '~/utils/xumm'
+import type { Route } from './+types/portfolio'
 
 interface PortfolioItem {
   symbol: string

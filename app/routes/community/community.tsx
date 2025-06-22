@@ -1,17 +1,15 @@
-import { Form, data, useActionData, useLoaderData } from 'react-router'
-import type { Route } from './+types/community'
-
 import { useForm } from '@conform-to/react'
 import { parseWithValibot } from 'conform-to-valibot'
-import * as v from 'valibot'
-
 import { atom, useAtom } from 'jotai'
+import { data, Form, useActionData, useLoaderData } from 'react-router'
 import useSWR from 'swr'
-import { useUser } from '~/utils/xumm'
-
-import { Xaman } from '~/components/xrp'
+import * as v from 'valibot'
 import { Alert } from '~/components/ui/Alert'
 import { StatItem, StatsContainer } from '~/components/ui/Stats'
+
+import { Xaman } from '~/components/xrp'
+import { useUser } from '~/utils/xumm'
+import type { Route } from './+types/community'
 
 // バリデーションスキーマ
 const PostSchema = v.object({
@@ -170,7 +168,12 @@ export default function Community({ loaderData }: Route.ComponentProps) {
 
           <StatsContainer className='mt-4'>
             <StatItem title='総投稿数' value={loaderData.stats.totalPosts} description='posts' variant='primary' />
-            <StatItem title='アクティブユーザー' value={loaderData.stats.activeUsers} description='users' variant='secondary' />
+            <StatItem
+              title='アクティブユーザー'
+              value={loaderData.stats.activeUsers}
+              description='users'
+              variant='secondary'
+            />
             <StatItem title='今日の投稿' value={loaderData.stats.todayPosts} description='today' variant='accent' />
           </StatsContainer>
         </div>

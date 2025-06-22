@@ -1,0 +1,14 @@
+.git
+.svn
+.hg
+node_modules
+package-lock.json
+bun.lock
+.react-router/**/*
+.wrangler
+build
+public/**/*
+.vitepress
+.vscode
+.idea
+*.tsbuildinfo

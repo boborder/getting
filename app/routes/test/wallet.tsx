@@ -1,10 +1,9 @@
-import { Form, useActionData } from 'react-router'
-import type { Route } from './+types/wallet'
-
 import { useState } from 'react'
+import { Form, useActionData } from 'react-router'
 import { type AccountInfoResponse, Client, Wallet } from 'xrpl'
 import { Alert } from '~/components/ui/Alert'
 import { Card, CardBody, CardTitle } from '~/components/ui/Card'
+import type { Route } from './+types/wallet'
 
 // ウォレット情報の型定義
 interface WalletInfo {

@@ -1,13 +1,12 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
-    "useIgnoreFile": false
+    "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false,
-    "ignore": ["worker-configuration.d.ts", "sw.js"]
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,
@@ -18,50 +17,42 @@
     "lineEnding": "lf",
     "lineWidth": 120,
     "attributePosition": "auto",
-    "bracketSpacing": true,
-    "ignore": [
-      "**/.git",
-      "**/.svn",
-      "**/.hg",
-      "**/node_modules",
-      "**/package-lock.json",
-      "**/bun.lock",
-      "**/.vitepress/cache",
-      "**/.vitepress/dist",
-      "**/.vscode",
-      "**/.idea",
-      "**/.wrangler",
-      "**/.react-router",
-      "**/build",
-      "**/public"
-    ]
-  },
-  "organizeImports": {
-    "enabled": true
+    "bracketSpacing": true
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
       "correctness": {
-        "noUnusedVariables": "warn"
+        "noUnusedVariables": "off",
+        "noUnusedImports": "off"
       },
       "a11y": {
         "useButtonType": "off",
         "noSvgWithoutTitle": "off",
         "noNoninteractiveTabindex": "off"
       },
-      "complexity": { "useLiteralKeys": "off" },
-      "nursery": { "useSortedClasses": "off" },
+      "complexity": {
+        "useLiteralKeys": "off",
+        "noBannedTypes": "off",
+        "noStaticOnlyClass": "off"
+      },
+      "nursery": {
+        "useSortedClasses": "off",
+        "useUniqueElementIds": "off"
+      },
       "style": {
         "noParameterAssign": "off",
         "noNonNullAssertion": "off",
         "useSelfClosingElements": "off",
-        "useTemplate": "off"
+        "useTemplate": "off",
+        "useExportType": "off"
       },
       "suspicious": {
         "noControlCharactersInRegex": "off",
-        "noExplicitAny": "off"
+        "noExplicitAny": "off",
+        "noEmptyInterface": "off",
+        "noConfusingVoidType": "off"
       }
     }
   },

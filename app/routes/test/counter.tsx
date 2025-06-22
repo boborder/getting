@@ -1,5 +1,5 @@
-import type { Route } from './+types/counter'
 import { Outlet } from 'react-router'
+import type { Route } from './+types/counter'
 
 export async function loader({ context }: Route.LoaderArgs) {
   const { cloudflare } = context

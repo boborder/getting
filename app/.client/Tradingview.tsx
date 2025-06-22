@@ -11,7 +11,7 @@ export const TradingView = () => {
   return (
     <ClientOnly fallback={<div>Loading...</div>}>
       {() => (
-        <div className='h-[64vh] mb-8'>
+        <div className='h-[64vh] md:h-[75vh] mb-8'>
           <AdvancedRealTimeChart
             autosize
             theme={theme}

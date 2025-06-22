@@ -78,25 +78,17 @@
       "indexes": {
         "idx_posts_category_created": {
           "name": "idx_posts_category_created",
-          "columns": [
-            "category",
-            "created_at"
-          ],
+          "columns": ["category", "created_at"],
           "isUnique": false
         },
         "idx_posts_user_created": {
           "name": "idx_posts_user_created",
-          "columns": [
-            "user_id",
-            "created_at"
-          ],
+          "columns": ["user_id", "created_at"],
           "isUnique": false
         },
         "idx_posts_ipfs_hash": {
           "name": "idx_posts_ipfs_hash",
-          "columns": [
-            "ipfs_hash"
-          ],
+          "columns": ["ipfs_hash"],
           "isUnique": false
         }
       },
@@ -105,12 +97,8 @@
           "name": "posts_user_id_users_id_fk",
           "tableFrom": "posts",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -184,17 +172,12 @@
       "indexes": {
         "idx_alerts_user_active": {
           "name": "idx_alerts_user_active",
-          "columns": [
-            "user_id",
-            "is_active"
-          ],
+          "columns": ["user_id", "is_active"],
           "isUnique": false
         },
         "idx_alerts_symbol": {
           "name": "idx_alerts_symbol",
-          "columns": [
-            "symbol"
-          ],
+          "columns": ["symbol"],
           "isUnique": false
         }
       },
@@ -203,12 +186,8 @@
           "name": "price_alerts_user_id_users_id_fk",
           "tableFrom": "price_alerts",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -260,18 +239,12 @@
       "indexes": {
         "idx_interactions_post": {
           "name": "idx_interactions_post",
-          "columns": [
-            "post_id"
-          ],
+          "columns": ["post_id"],
           "isUnique": false
         },
         "idx_interactions_user_post_type": {
           "name": "idx_interactions_user_post_type",
-          "columns": [
-            "user_id",
-            "post_id",
-            "interaction_type"
-          ],
+          "columns": ["user_id", "post_id", "interaction_type"],
           "isUnique": false
         }
       },
@@ -280,12 +253,8 @@
           "name": "user_interactions_user_id_users_id_fk",
           "tableFrom": "user_interactions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -293,12 +262,8 @@
           "name": "user_interactions_post_id_posts_id_fk",
           "tableFrom": "user_interactions",
           "tableTo": "posts",
-          "columnsFrom": [
-            "post_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["post_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -365,23 +330,17 @@
       "indexes": {
         "users_xumm_user_token_unique": {
           "name": "users_xumm_user_token_unique",
-          "columns": [
-            "xumm_user_token"
-          ],
+          "columns": ["xumm_user_token"],
           "isUnique": true
         },
         "idx_users_xumm_token": {
           "name": "idx_users_xumm_token",
-          "columns": [
-            "xumm_user_token"
-          ],
+          "columns": ["xumm_user_token"],
           "isUnique": false
         },
         "idx_users_xrpl_address": {
           "name": "idx_users_xrpl_address",
-          "columns": [
-            "xrpl_address"
-          ],
+          "columns": ["xrpl_address"],
           "isUnique": false
         }
       },

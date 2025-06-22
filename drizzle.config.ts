@@ -8,7 +8,7 @@ let dbConfig: ReturnType<typeof defineConfig>
 if (process.env.ENVIRONMENT === 'production') {
   config({ path: './.prod.vars' })
   dbConfig = defineConfig({
-    schema: './drizzle/schema.ts',
+    schema: './drizzle/schema/schema.ts',
     out: './drizzle/migrations',
     dialect: 'sqlite',
     driver: 'd1-http',
@@ -26,7 +26,7 @@ if (process.env.ENVIRONMENT === 'production') {
   }
 
   dbConfig = defineConfig({
-    schema: './drizzle/schema.ts',
+    schema: './drizzle/schema/schema.ts',
     out: './drizzle/migrations',
     dialect: 'sqlite',
     dbCredentials: {
